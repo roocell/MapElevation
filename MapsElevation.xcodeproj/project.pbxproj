@@ -1,0 +1,608 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7D53D0FC18F06BEC00A80086 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D53D0FB18F06BEC00A80086 /* SystemConfiguration.framework */; };
+		7D53D0FE18F06BF300A80086 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D53D0FD18F06BF300A80086 /* MobileCoreServices.framework */; };
+		7D780AA51902A857001EDA7E /* ElevationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AA41902A857001EDA7E /* ElevationRequest.m */; };
+		7D780ABA1902A8F7001EDA7E /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AA81902A8F7001EDA7E /* AFHTTPRequestOperation.m */; };
+		7D780ABB1902A8F7001EDA7E /* AFHTTPRequestOperationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AAA1902A8F7001EDA7E /* AFHTTPRequestOperationManager.m */; };
+		7D780ABC1902A8F7001EDA7E /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AAC1902A8F7001EDA7E /* AFHTTPSessionManager.m */; };
+		7D780ABD1902A8F7001EDA7E /* AFNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AAF1902A8F7001EDA7E /* AFNetworkReachabilityManager.m */; };
+		7D780ABE1902A8F7001EDA7E /* AFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AB11902A8F7001EDA7E /* AFSecurityPolicy.m */; };
+		7D780ABF1902A8F7001EDA7E /* AFURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AB31902A8F7001EDA7E /* AFURLConnectionOperation.m */; };
+		7D780AC01902A8F7001EDA7E /* AFURLRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AB51902A8F7001EDA7E /* AFURLRequestSerialization.m */; };
+		7D780AC11902A8F7001EDA7E /* AFURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AB71902A8F7001EDA7E /* AFURLResponseSerialization.m */; };
+		7D780AC21902A8F7001EDA7E /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AB91902A8F7001EDA7E /* AFURLSessionManager.m */; };
+		7D780AC51902B3CF001EDA7E /* ElevationPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AC41902B3CF001EDA7E /* ElevationPoint.m */; };
+		7D780AC81902B459001EDA7E /* ElevationGrid.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AC71902B459001EDA7E /* ElevationGrid.m */; };
+		7D99FDE418F0309600EBC6C2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D99FDE318F0309600EBC6C2 /* Foundation.framework */; };
+		7D99FDE618F0309600EBC6C2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D99FDE518F0309600EBC6C2 /* CoreGraphics.framework */; };
+		7D99FDE818F0309600EBC6C2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D99FDE718F0309600EBC6C2 /* UIKit.framework */; };
+		7D99FDEE18F0309600EBC6C2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7D99FDEC18F0309600EBC6C2 /* InfoPlist.strings */; };
+		7D99FDF018F0309600EBC6C2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D99FDEF18F0309600EBC6C2 /* main.m */; };
+		7D99FDF418F0309600EBC6C2 /* elevationAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D99FDF318F0309600EBC6C2 /* elevationAppDelegate.m */; };
+		7D99FDF718F0309600EBC6C2 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7D99FDF518F0309600EBC6C2 /* Main_iPhone.storyboard */; };
+		7D99FDFA18F0309600EBC6C2 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7D99FDF818F0309600EBC6C2 /* Main_iPad.storyboard */; };
+		7D99FDFD18F0309600EBC6C2 /* elevationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D99FDFC18F0309600EBC6C2 /* elevationViewController.m */; };
+		7D99FDFF18F0309600EBC6C2 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D99FDFE18F0309600EBC6C2 /* Images.xcassets */; };
+		7D99FE0618F0309600EBC6C2 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D99FE0518F0309600EBC6C2 /* XCTest.framework */; };
+		7D99FE0718F0309600EBC6C2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D99FDE318F0309600EBC6C2 /* Foundation.framework */; };
+		7D99FE0818F0309600EBC6C2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D99FDE718F0309600EBC6C2 /* UIKit.framework */; };
+		7D99FE1018F0309600EBC6C2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7D99FE0E18F0309600EBC6C2 /* InfoPlist.strings */; };
+		7D99FE1218F0309700EBC6C2 /* MapsElevationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D99FE1118F0309600EBC6C2 /* MapsElevationTests.m */; };
+		7D99FE1D18F031DF00EBC6C2 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D99FE1C18F031DF00EBC6C2 /* MapKit.framework */; };
+		7D99FE4618F044CA00EBC6C2 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D99FE4518F044CA00EBC6C2 /* libz.dylib */; };
+		7D99FE4818F044D000EBC6C2 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D99FE4718F044D000EBC6C2 /* CFNetwork.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7D99FE0918F0309600EBC6C2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7D99FDD818F0309600EBC6C2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7D99FDDF18F0309600EBC6C2;
+			remoteInfo = MapsElevation;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		7D53D0FB18F06BEC00A80086 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		7D53D0FD18F06BF300A80086 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		7D780AA31902A857001EDA7E /* ElevationRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElevationRequest.h; sourceTree = "<group>"; };
+		7D780AA41902A857001EDA7E /* ElevationRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ElevationRequest.m; sourceTree = "<group>"; };
+		7D780AA71902A8F7001EDA7E /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
+		7D780AA81902A8F7001EDA7E /* AFHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPRequestOperation.m; sourceTree = "<group>"; };
+		7D780AA91902A8F7001EDA7E /* AFHTTPRequestOperationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperationManager.h; sourceTree = "<group>"; };
+		7D780AAA1902A8F7001EDA7E /* AFHTTPRequestOperationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPRequestOperationManager.m; sourceTree = "<group>"; };
+		7D780AAB1902A8F7001EDA7E /* AFHTTPSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPSessionManager.h; sourceTree = "<group>"; };
+		7D780AAC1902A8F7001EDA7E /* AFHTTPSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPSessionManager.m; sourceTree = "<group>"; };
+		7D780AAD1902A8F7001EDA7E /* AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworking.h; sourceTree = "<group>"; };
+		7D780AAE1902A8F7001EDA7E /* AFNetworkReachabilityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworkReachabilityManager.h; sourceTree = "<group>"; };
+		7D780AAF1902A8F7001EDA7E /* AFNetworkReachabilityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFNetworkReachabilityManager.m; sourceTree = "<group>"; };
+		7D780AB01902A8F7001EDA7E /* AFSecurityPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFSecurityPolicy.h; sourceTree = "<group>"; };
+		7D780AB11902A8F7001EDA7E /* AFSecurityPolicy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFSecurityPolicy.m; sourceTree = "<group>"; };
+		7D780AB21902A8F7001EDA7E /* AFURLConnectionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLConnectionOperation.h; sourceTree = "<group>"; };
+		7D780AB31902A8F7001EDA7E /* AFURLConnectionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLConnectionOperation.m; sourceTree = "<group>"; };
+		7D780AB41902A8F7001EDA7E /* AFURLRequestSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLRequestSerialization.h; sourceTree = "<group>"; };
+		7D780AB51902A8F7001EDA7E /* AFURLRequestSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLRequestSerialization.m; sourceTree = "<group>"; };
+		7D780AB61902A8F7001EDA7E /* AFURLResponseSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLResponseSerialization.h; sourceTree = "<group>"; };
+		7D780AB71902A8F7001EDA7E /* AFURLResponseSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLResponseSerialization.m; sourceTree = "<group>"; };
+		7D780AB81902A8F7001EDA7E /* AFURLSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLSessionManager.h; sourceTree = "<group>"; };
+		7D780AB91902A8F7001EDA7E /* AFURLSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLSessionManager.m; sourceTree = "<group>"; };
+		7D780AC31902B3CF001EDA7E /* ElevationPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElevationPoint.h; sourceTree = "<group>"; };
+		7D780AC41902B3CF001EDA7E /* ElevationPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ElevationPoint.m; sourceTree = "<group>"; };
+		7D780AC61902B459001EDA7E /* ElevationGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElevationGrid.h; sourceTree = "<group>"; };
+		7D780AC71902B459001EDA7E /* ElevationGrid.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ElevationGrid.m; sourceTree = "<group>"; };
+		7D99FDE018F0309600EBC6C2 /* MapsElevation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapsElevation.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7D99FDE318F0309600EBC6C2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		7D99FDE518F0309600EBC6C2 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		7D99FDE718F0309600EBC6C2 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		7D99FDEB18F0309600EBC6C2 /* MapsElevation-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MapsElevation-Info.plist"; sourceTree = "<group>"; };
+		7D99FDED18F0309600EBC6C2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		7D99FDEF18F0309600EBC6C2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		7D99FDF118F0309600EBC6C2 /* MapsElevation-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MapsElevation-Prefix.pch"; sourceTree = "<group>"; };
+		7D99FDF218F0309600EBC6C2 /* elevationAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = elevationAppDelegate.h; sourceTree = "<group>"; };
+		7D99FDF318F0309600EBC6C2 /* elevationAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = elevationAppDelegate.m; sourceTree = "<group>"; };
+		7D99FDF618F0309600EBC6C2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
+		7D99FDF918F0309600EBC6C2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
+		7D99FDFB18F0309600EBC6C2 /* elevationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = elevationViewController.h; sourceTree = "<group>"; };
+		7D99FDFC18F0309600EBC6C2 /* elevationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = elevationViewController.m; sourceTree = "<group>"; };
+		7D99FDFE18F0309600EBC6C2 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		7D99FE0418F0309600EBC6C2 /* MapsElevationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MapsElevationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7D99FE0518F0309600EBC6C2 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		7D99FE0D18F0309600EBC6C2 /* MapsElevationTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MapsElevationTests-Info.plist"; sourceTree = "<group>"; };
+		7D99FE0F18F0309600EBC6C2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		7D99FE1118F0309600EBC6C2 /* MapsElevationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapsElevationTests.m; sourceTree = "<group>"; };
+		7D99FE1B18F0315B00EBC6C2 /* util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
+		7D99FE1C18F031DF00EBC6C2 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		7D99FE4318F043FD00EBC6C2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		7D99FE4518F044CA00EBC6C2 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		7D99FE4718F044D000EBC6C2 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7D99FDDD18F0309600EBC6C2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7D53D0FE18F06BF300A80086 /* MobileCoreServices.framework in Frameworks */,
+				7D53D0FC18F06BEC00A80086 /* SystemConfiguration.framework in Frameworks */,
+				7D99FE4818F044D000EBC6C2 /* CFNetwork.framework in Frameworks */,
+				7D99FE4618F044CA00EBC6C2 /* libz.dylib in Frameworks */,
+				7D99FE1D18F031DF00EBC6C2 /* MapKit.framework in Frameworks */,
+				7D99FDE618F0309600EBC6C2 /* CoreGraphics.framework in Frameworks */,
+				7D99FDE818F0309600EBC6C2 /* UIKit.framework in Frameworks */,
+				7D99FDE418F0309600EBC6C2 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7D99FE0118F0309600EBC6C2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7D99FE0618F0309600EBC6C2 /* XCTest.framework in Frameworks */,
+				7D99FE0818F0309600EBC6C2 /* UIKit.framework in Frameworks */,
+				7D99FE0718F0309600EBC6C2 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7D780AA61902A8F7001EDA7E /* AFNetworking */ = {
+			isa = PBXGroup;
+			children = (
+				7D780AA71902A8F7001EDA7E /* AFHTTPRequestOperation.h */,
+				7D780AA81902A8F7001EDA7E /* AFHTTPRequestOperation.m */,
+				7D780AA91902A8F7001EDA7E /* AFHTTPRequestOperationManager.h */,
+				7D780AAA1902A8F7001EDA7E /* AFHTTPRequestOperationManager.m */,
+				7D780AAB1902A8F7001EDA7E /* AFHTTPSessionManager.h */,
+				7D780AAC1902A8F7001EDA7E /* AFHTTPSessionManager.m */,
+				7D780AAD1902A8F7001EDA7E /* AFNetworking.h */,
+				7D780AAE1902A8F7001EDA7E /* AFNetworkReachabilityManager.h */,
+				7D780AAF1902A8F7001EDA7E /* AFNetworkReachabilityManager.m */,
+				7D780AB01902A8F7001EDA7E /* AFSecurityPolicy.h */,
+				7D780AB11902A8F7001EDA7E /* AFSecurityPolicy.m */,
+				7D780AB21902A8F7001EDA7E /* AFURLConnectionOperation.h */,
+				7D780AB31902A8F7001EDA7E /* AFURLConnectionOperation.m */,
+				7D780AB41902A8F7001EDA7E /* AFURLRequestSerialization.h */,
+				7D780AB51902A8F7001EDA7E /* AFURLRequestSerialization.m */,
+				7D780AB61902A8F7001EDA7E /* AFURLResponseSerialization.h */,
+				7D780AB71902A8F7001EDA7E /* AFURLResponseSerialization.m */,
+				7D780AB81902A8F7001EDA7E /* AFURLSessionManager.h */,
+				7D780AB91902A8F7001EDA7E /* AFURLSessionManager.m */,
+			);
+			path = AFNetworking;
+			sourceTree = "<group>";
+		};
+		7D99FDD718F0309600EBC6C2 = {
+			isa = PBXGroup;
+			children = (
+				7D99FDE918F0309600EBC6C2 /* MapsElevation */,
+				7D99FE0B18F0309600EBC6C2 /* MapsElevationTests */,
+				7D99FDE218F0309600EBC6C2 /* Frameworks */,
+				7D99FDE118F0309600EBC6C2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7D99FDE118F0309600EBC6C2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7D99FDE018F0309600EBC6C2 /* MapsElevation.app */,
+				7D99FE0418F0309600EBC6C2 /* MapsElevationTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7D99FDE218F0309600EBC6C2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7D53D0FD18F06BF300A80086 /* MobileCoreServices.framework */,
+				7D53D0FB18F06BEC00A80086 /* SystemConfiguration.framework */,
+				7D99FE4718F044D000EBC6C2 /* CFNetwork.framework */,
+				7D99FE4518F044CA00EBC6C2 /* libz.dylib */,
+				7D99FE4318F043FD00EBC6C2 /* libxml2.dylib */,
+				7D99FE1C18F031DF00EBC6C2 /* MapKit.framework */,
+				7D99FDE318F0309600EBC6C2 /* Foundation.framework */,
+				7D99FDE518F0309600EBC6C2 /* CoreGraphics.framework */,
+				7D99FDE718F0309600EBC6C2 /* UIKit.framework */,
+				7D99FE0518F0309600EBC6C2 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7D99FDE918F0309600EBC6C2 /* MapsElevation */ = {
+			isa = PBXGroup;
+			children = (
+				7D780AA61902A8F7001EDA7E /* AFNetworking */,
+				7D99FE1B18F0315B00EBC6C2 /* util.h */,
+				7D99FDF218F0309600EBC6C2 /* elevationAppDelegate.h */,
+				7D99FDF318F0309600EBC6C2 /* elevationAppDelegate.m */,
+				7D780AC31902B3CF001EDA7E /* ElevationPoint.h */,
+				7D780AC41902B3CF001EDA7E /* ElevationPoint.m */,
+				7D780AC61902B459001EDA7E /* ElevationGrid.h */,
+				7D780AC71902B459001EDA7E /* ElevationGrid.m */,
+				7D780AA31902A857001EDA7E /* ElevationRequest.h */,
+				7D780AA41902A857001EDA7E /* ElevationRequest.m */,
+				7D99FDFB18F0309600EBC6C2 /* elevationViewController.h */,
+				7D99FDFC18F0309600EBC6C2 /* elevationViewController.m */,
+				7D99FDFE18F0309600EBC6C2 /* Images.xcassets */,
+				7D99FDEA18F0309600EBC6C2 /* Supporting Files */,
+			);
+			path = MapsElevation;
+			sourceTree = "<group>";
+		};
+		7D99FDEA18F0309600EBC6C2 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				7D99FDF518F0309600EBC6C2 /* Main_iPhone.storyboard */,
+				7D99FDF818F0309600EBC6C2 /* Main_iPad.storyboard */,
+				7D99FDEB18F0309600EBC6C2 /* MapsElevation-Info.plist */,
+				7D99FDEC18F0309600EBC6C2 /* InfoPlist.strings */,
+				7D99FDEF18F0309600EBC6C2 /* main.m */,
+				7D99FDF118F0309600EBC6C2 /* MapsElevation-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		7D99FE0B18F0309600EBC6C2 /* MapsElevationTests */ = {
+			isa = PBXGroup;
+			children = (
+				7D99FE1118F0309600EBC6C2 /* MapsElevationTests.m */,
+				7D99FE0C18F0309600EBC6C2 /* Supporting Files */,
+			);
+			path = MapsElevationTests;
+			sourceTree = "<group>";
+		};
+		7D99FE0C18F0309600EBC6C2 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				7D99FE0D18F0309600EBC6C2 /* MapsElevationTests-Info.plist */,
+				7D99FE0E18F0309600EBC6C2 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7D99FDDF18F0309600EBC6C2 /* MapsElevation */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7D99FE1518F0309700EBC6C2 /* Build configuration list for PBXNativeTarget "MapsElevation" */;
+			buildPhases = (
+				7D99FDDC18F0309600EBC6C2 /* Sources */,
+				7D99FDDD18F0309600EBC6C2 /* Frameworks */,
+				7D99FDDE18F0309600EBC6C2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MapsElevation;
+			productName = MapsElevation;
+			productReference = 7D99FDE018F0309600EBC6C2 /* MapsElevation.app */;
+			productType = "com.apple.product-type.application";
+		};
+		7D99FE0318F0309600EBC6C2 /* MapsElevationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7D99FE1818F0309700EBC6C2 /* Build configuration list for PBXNativeTarget "MapsElevationTests" */;
+			buildPhases = (
+				7D99FE0018F0309600EBC6C2 /* Sources */,
+				7D99FE0118F0309600EBC6C2 /* Frameworks */,
+				7D99FE0218F0309600EBC6C2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7D99FE0A18F0309600EBC6C2 /* PBXTargetDependency */,
+			);
+			name = MapsElevationTests;
+			productName = MapsElevationTests;
+			productReference = 7D99FE0418F0309600EBC6C2 /* MapsElevationTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7D99FDD818F0309600EBC6C2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = elevation;
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "ThumbGenius Software";
+				TargetAttributes = {
+					7D99FE0318F0309600EBC6C2 = {
+						TestTargetID = 7D99FDDF18F0309600EBC6C2;
+					};
+				};
+			};
+			buildConfigurationList = 7D99FDDB18F0309600EBC6C2 /* Build configuration list for PBXProject "MapsElevation" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 7D99FDD718F0309600EBC6C2;
+			productRefGroup = 7D99FDE118F0309600EBC6C2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7D99FDDF18F0309600EBC6C2 /* MapsElevation */,
+				7D99FE0318F0309600EBC6C2 /* MapsElevationTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7D99FDDE18F0309600EBC6C2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7D99FDFA18F0309600EBC6C2 /* Main_iPad.storyboard in Resources */,
+				7D99FDFF18F0309600EBC6C2 /* Images.xcassets in Resources */,
+				7D99FDF718F0309600EBC6C2 /* Main_iPhone.storyboard in Resources */,
+				7D99FDEE18F0309600EBC6C2 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7D99FE0218F0309600EBC6C2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7D99FE1018F0309600EBC6C2 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7D99FDDC18F0309600EBC6C2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7D780ABB1902A8F7001EDA7E /* AFHTTPRequestOperationManager.m in Sources */,
+				7D99FDF418F0309600EBC6C2 /* elevationAppDelegate.m in Sources */,
+				7D780ABF1902A8F7001EDA7E /* AFURLConnectionOperation.m in Sources */,
+				7D780AC01902A8F7001EDA7E /* AFURLRequestSerialization.m in Sources */,
+				7D780ABC1902A8F7001EDA7E /* AFHTTPSessionManager.m in Sources */,
+				7D780ABA1902A8F7001EDA7E /* AFHTTPRequestOperation.m in Sources */,
+				7D780AC81902B459001EDA7E /* ElevationGrid.m in Sources */,
+				7D780AC51902B3CF001EDA7E /* ElevationPoint.m in Sources */,
+				7D99FDFD18F0309600EBC6C2 /* elevationViewController.m in Sources */,
+				7D780ABE1902A8F7001EDA7E /* AFSecurityPolicy.m in Sources */,
+				7D780ABD1902A8F7001EDA7E /* AFNetworkReachabilityManager.m in Sources */,
+				7D780AC21902A8F7001EDA7E /* AFURLSessionManager.m in Sources */,
+				7D99FDF018F0309600EBC6C2 /* main.m in Sources */,
+				7D780AA51902A857001EDA7E /* ElevationRequest.m in Sources */,
+				7D780AC11902A8F7001EDA7E /* AFURLResponseSerialization.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7D99FE0018F0309600EBC6C2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7D99FE1218F0309700EBC6C2 /* MapsElevationTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7D99FE0A18F0309600EBC6C2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7D99FDDF18F0309600EBC6C2 /* MapsElevation */;
+			targetProxy = 7D99FE0918F0309600EBC6C2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		7D99FDEC18F0309600EBC6C2 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7D99FDED18F0309600EBC6C2 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		7D99FDF518F0309600EBC6C2 /* Main_iPhone.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7D99FDF618F0309600EBC6C2 /* Base */,
+			);
+			name = Main_iPhone.storyboard;
+			sourceTree = "<group>";
+		};
+		7D99FDF818F0309600EBC6C2 /* Main_iPad.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7D99FDF918F0309600EBC6C2 /* Base */,
+			);
+			name = Main_iPad.storyboard;
+			sourceTree = "<group>";
+		};
+		7D99FE0E18F0309600EBC6C2 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7D99FE0F18F0309600EBC6C2 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		7D99FE1318F0309700EBC6C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7D99FE1418F0309700EBC6C2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7D99FE1618F0309700EBC6C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MapsElevation/MapsElevation-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"${SDK_DIR}/usr/include/libxml2",
+				);
+				INFOPLIST_FILE = "MapsElevation/MapsElevation-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "87FC0B42-42AE-4E66-A14D-0A56DD92C47E";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		7D99FE1718F0309700EBC6C2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MapsElevation/MapsElevation-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"${SDK_DIR}/usr/include/libxml2",
+				);
+				INFOPLIST_FILE = "MapsElevation/MapsElevation-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "87FC0B42-42AE-4E66-A14D-0A56DD92C47E";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		7D99FE1918F0309700EBC6C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/MapsElevation.app/MapsElevation";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MapsElevation/MapsElevation-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "MapsElevationTests/MapsElevationTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		7D99FE1A18F0309700EBC6C2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/MapsElevation.app/MapsElevation";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MapsElevation/MapsElevation-Prefix.pch";
+				INFOPLIST_FILE = "MapsElevationTests/MapsElevationTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7D99FDDB18F0309600EBC6C2 /* Build configuration list for PBXProject "MapsElevation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D99FE1318F0309700EBC6C2 /* Debug */,
+				7D99FE1418F0309700EBC6C2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7D99FE1518F0309700EBC6C2 /* Build configuration list for PBXNativeTarget "MapsElevation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D99FE1618F0309700EBC6C2 /* Debug */,
+				7D99FE1718F0309700EBC6C2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7D99FE1818F0309700EBC6C2 /* Build configuration list for PBXNativeTarget "MapsElevationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D99FE1918F0309700EBC6C2 /* Debug */,
+				7D99FE1A18F0309700EBC6C2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7D99FDD818F0309600EBC6C2 /* Project object */;
+}
