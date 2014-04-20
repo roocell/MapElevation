@@ -24,4 +24,6 @@ typedef void (^ElevationRequestBlock)(NSMutableArray*);
 -(id) initWithQueryArray:(NSMutableArray*) points usingBlock:(ElevationRequestBlock)delegate;
 -(id) initWithQueryPath:(CLLocationCoordinate2D) start withEnd:(CLLocationCoordinate2D) end andSamples:(int) samples usingBlock:(ElevationRequestBlock)delegate;;
 
+#define MAPQUEST_STATUS_ELEVATION_NOT_FOUND (-32768)
+
 @end
