@@ -41,12 +41,12 @@
 }
 
 
--(void) addPin:(CLLocationCoordinate2D) p withTitle:(NSString*) title
+-(void) addPin:(CLLocationCoordinate2D) p withTitle:(NSString*) title withSubtitle:(NSString*) sub
 {
     MKPointAnnotation *point = [[MKPointAnnotation alloc] init];
     point.coordinate = p;
     if (title) point.title = title;
-    //point.subtitle = @"I'm here!!!";
+    if (sub) point.subtitle = sub;
     [_mapView addAnnotation:point];
 
     //TGLog(@"%f,%f", p.latitude, p.longitude);
@@ -72,20 +72,13 @@
     ElevationGrid* grid=[[ElevationGrid alloc] initWithCenterCoordinate:_mapView.centerCoordinate withWidth:[self getMapWidthInMeters] usingBlock:^(NSMutableArray* points)
      {
          //TGLog(@"ElevationGrid complete");
-         
-         // find min/max
-         float max=0;
-         float min=99999999.9;
+                  
          for (ElevationPoint* p in points)
          {
-             if (p.elevation>max) max=p.elevation;
-             if (p.elevation<min) min=p.elevation;
-         }
-         
-         
-         for (ElevationPoint* p in points)
-         {
-             [self addPin:p.coordinate withTitle:[NSString stringWithFormat:@"%f", p.elevation]];
+             NSString* sub=@"point";
+             if (p.color==MKPinAnnotationColorGreen) sub=@"maxima";
+             else if (p.color==MKPinAnnotationColorRed) sub=@"minima";
+             [self addPin:p.coordinate withTitle:[NSString stringWithFormat:@"%f", p.elevation] withSubtitle:sub];
          }
      }];
 
@@ -109,7 +102,7 @@
     for (NSDictionary* item in sortedArray)
     {
         CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([[item valueForKey:@"latitude"] floatValue], [[item valueForKey:@"longitude"] floatValue]);
-        [self addPin:coordinate withTitle:[NSString stringWithFormat:@"%@",[item valueForKey:@"elevation"]]];
+        [self addPin:coordinate withTitle:[NSString stringWithFormat:@"%@",[item valueForKey:@"elevation"]] withSubtitle:nil];
         i++;
         if (i>5) break;
     }
@@ -184,9 +177,35 @@
     
 }
 
-- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id < MKAnnotation >)annotation
-{
-    return nil;
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation {
+    //create annotation
+    MKPinAnnotationView *pinView = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pinView"];
+    if (!pinView) {
+        pinView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pinView"];
+        pinView.pinColor = MKPinAnnotationColorRed;
+        pinView.animatesDrop = FALSE;
+        pinView.canShowCallout = YES;
+        
+        //details button
+        UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+        pinView.rightCalloutAccessoryView = rightButton;
+        
+    } else {
+        pinView.annotation = annotation;
+    }
+    if([annotation.subtitle isEqualToString:@"maxima"])
+    {
+        pinView.animatesDrop=YES;
+        pinView.pinColor=MKPinAnnotationColorGreen;
+        
+    } else if([annotation.subtitle isEqualToString:@"minima"]) {
+            pinView.animatesDrop=YES;
+            pinView.pinColor=MKPinAnnotationColorRed;
+    } else {
+        pinView.animatesDrop=NO;
+        pinView.pinColor=MKPinAnnotationColorPurple;
+    }
+    return pinView;
 }
 
 - (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views
