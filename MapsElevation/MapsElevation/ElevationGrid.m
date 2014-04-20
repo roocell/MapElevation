@@ -148,7 +148,7 @@ float getDist(float lat1, float long1, float lat2, float long2)
                 // calc maxima/minima
 #define ELEVATION_DELTA 0 // must be at least Xm different to consider maxima/minima
 #define NEIGHBOURHOOD 5  // pick maxima at least this many points apart
-                for (int l=0; l<5; l++)
+                for (int l=0; l<3; l++)
                 {
                     float delta=ELEVATION_DELTA*(l+1);
                     for (y=0; y<rows; y++)
@@ -166,27 +166,11 @@ float getDist(float lat1, float long1, float lat2, float long2)
                             a=cgrid[x-l][y-l].elevation;
                             b=cgrid[x][y-l].elevation;
                             c=cgrid[x+l][y].elevation;
-                            d=cgrid[x+l][y+l].elevation;
-                            if (z>a+delta &&
-                                z>b+delta   &&
-                                z>c+delta   &&
-                                z>d+delta )
-                            {
                                 //p.maxima+=1.0;
-                                p.maxima+=fabs(z-a);
-                                p.maxima+=fabs(z-b);
-                                p.maxima+=fabs(z-c);
-                                p.maxima+=fabs(z-d);
-                                cgrid[x][y].maxima++;
-                            }
-                            if (z<a-delta &&
-                                z<b-delta   &&
-                                z<c-delta   &&
-                                z<d-delta )
-                            {
-                                p.minima+=1.0;
-                                cgrid[x][y].minima--;
-                            }
+                                p.maxima+=(z-a);
+                                p.maxima+=(z-b);
+                                p.maxima+=(z-c);
+                                p.maxima+=(z-d);
                         }
                     }
                 }
@@ -208,7 +192,15 @@ float getDist(float lat1, float long1, float lat2, float long2)
                 }];
                 
                 NSMutableArray* maxima=[[NSMutableArray alloc] initWithCapacity:0];
+                NSMutableArray* minima=[[NSMutableArray alloc] initWithCapacity:0];
                 int m=0;
+#if 0 // top5 from sort
+                for (m=0; m<5; m++)
+                {
+                    [maxima addObject:[sortedMaxima objectAtIndex:m]];
+                    [minima addObject:[sortedMaxima objectAtIndex:[sortedMaxima count]-m]];
+                }
+#else
                 while (m<5)
                 {
                     for (ElevationPoint* p in sortedMaxima)
@@ -228,13 +220,45 @@ float getDist(float lat1, float long1, float lat2, float long2)
                         if (!near)
                         {
                             TGLog(@"maxima %f", p.maxima);
-                            [maxima addObject:p];
+                            p.color=MKPinAnnotationColorGreen;
+                           [maxima addObject:p];
                             m++;
                             break;
                         }
                     }
                 }
+                m=0;
+                while (m<5)
+                {
+                    for (unsigned long q=[sortedMaxima count]-1; q>0; q--)
+                    {
+                        ElevationPoint* p=[sortedMaxima objectAtIndex:q];
+                        // make sure we dont pick a maxima near another one.
+                        int near=0;
+                        for (int n=0; n<m; n++)
+                        {
+                            ElevationPoint* mp=[minima objectAtIndex:n];
+                            if (abs(mp.row-p.row)<NEIGHBOURHOOD ||
+                                abs(mp.col-p.col)<NEIGHBOURHOOD)
+                            {
+                                near=1;
+                                break;
+                            }
+                        }
+                        if (!near)
+                        {
+                            TGLog(@"minima %f", p.maxima);
+                            p.color=MKPinAnnotationColorRed;
+                            [minima addObject:p];
+                            m++;
+                            break;
+                        }
+                    }
+                }
+#endif
+                //delegateBlock(sort);
                 delegateBlock(maxima);
+                delegateBlock(minima);
             }
             
         }];

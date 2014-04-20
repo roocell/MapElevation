@@ -17,7 +17,7 @@
 {
     if (self=[super init])
     {
-        _color=[UIColor blackColor];
+        _color=MKPinAnnotationColorPurple;
         return self;
     }
     return nil;

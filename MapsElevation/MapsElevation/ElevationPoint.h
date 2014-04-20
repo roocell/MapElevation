@@ -24,6 +24,5 @@ typedef struct {
 @property float   minima;
 @property int     row;
 @property int     col;
-@property (retain, nonatomic) UIColor* color;
-
+@property int color;
 @end
