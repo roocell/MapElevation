@@ -132,9 +132,10 @@ float getDist(float lat1, float long1, float lat2, float long2)
                     NSMutableArray* row=[_grid objectAtIndex:y];
                     for (x=0; x<cols; x++)
                     {
-                        if ([_grid count]<=x)
+                        if ([row count]<=x)
                         {
                             TGLog(@"ERR - we dont have %d columns", GRID_POINTS_PER_ROW);
+                            cgrid[x][y].elevation=MAPQUEST_STATUS_ELEVATION_NOT_FOUND;
                             break;
                         }
                         ElevationPoint* p=[row objectAtIndex:x];
@@ -161,11 +162,19 @@ float getDist(float lat1, float long1, float lat2, float long2)
                             if (x-l<0) continue;
                             if (x+l>=cols) continue;
                             ElevationPoint* p=[row objectAtIndex:x];
-                            float a,b,c,d;
-                            float z=cgrid[x][y].elevation;
+                            float a,b,c,d, z;
+                            
+                            z=cgrid[x][y].elevation;
+                            if (z==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
                             a=cgrid[x-l][y-l].elevation;
+                            if (a==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
                             b=cgrid[x][y-l].elevation;
+                            if (b==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
                             c=cgrid[x+l][y].elevation;
+                            if (c==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
+                            
+
+                            
                                 //p.maxima+=1.0;
                                 p.maxima+=(z-a);
                                 p.maxima+=(z-b);
@@ -219,7 +228,7 @@ float getDist(float lat1, float long1, float lat2, float long2)
                         }
                         if (!near)
                         {
-                            TGLog(@"maxima %f", p.maxima);
+                            TGLog(@"maxima %f elev %f [%f,%f]", p.maxima, p.elevation, p.coordinate.latitude, p.coordinate.longitude);
                             p.color=MKPinAnnotationColorGreen;
                            [maxima addObject:p];
                             m++;
@@ -247,7 +256,7 @@ float getDist(float lat1, float long1, float lat2, float long2)
                         }
                         if (!near)
                         {
-                            TGLog(@"minima %f", p.maxima);
+                            TGLog(@"minima %f elev %f [%f,%f]", p.minima, p.elevation, p.coordinate.latitude, p.coordinate.longitude);
                             p.color=MKPinAnnotationColorRed;
                             [minima addObject:p];
                             m++;

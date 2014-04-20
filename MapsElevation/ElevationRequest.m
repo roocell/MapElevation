@@ -21,7 +21,6 @@
 #define MAPQUEST_ELEVATION_URL @"http://open.mapquestapi.com/elevation/v1/profile?key=%@&shapeFormat=raw&outFormat=json&latLngCollection=%@"
 #define MAPQUEST_API_MAX_POINTS_PER_REQUEST 32
 #define MAPQUEST_STATUS_SOME_ELEVATIONS_NOT_FOUND 602
-#define MAPQUEST_STATUS_ELEVATION_NOT_FOUND (-32768)
 #define MAPQUEST_DELIMITER @","
 
 @interface ElevationRequest ()
@@ -149,7 +148,7 @@
 // mapquest only has one API - a collection of points.
 -(void) MapquestResponse:(NSDictionary*) dict
 {
-    TGLog(@"processing %lu/%lu", _numberOfRequestsLeftToProcess, _numberOfRequests);
+    //TGLog(@"processing %lu/%lu", _numberOfRequestsLeftToProcess, _numberOfRequests);
     
     //TGLog(@"%@", dict);
     NSDictionary *info = [dict valueForKey:@"info"];
@@ -160,6 +159,10 @@
     {
         TGLog(@"ERR - mapquest data returned failure. %@", dict);
         return;
+    }
+    if (status==MAPQUEST_STATUS_SOME_ELEVATIONS_NOT_FOUND)
+    {
+        TGLog(@"INFO - mapquest some data points missing");
     }
     
     // add the data to the grid
@@ -179,13 +182,14 @@
         
         //TGLog(@"%@ %@ %@ %@", height, distance, lat, lng);
         
-        if ([height intValue]==MAPQUEST_STATUS_ELEVATION_NOT_FOUND)
-        {
-            continue;
-        }
         ElevationPoint* p=[[ElevationPoint alloc] init];
         p.coordinate=CLLocationCoordinate2DMake([lat floatValue], [lng floatValue]);
-        p.elevation=[height floatValue];
+        if ([height intValue]==MAPQUEST_STATUS_ELEVATION_NOT_FOUND)
+        {
+            p.elevation=MAPQUEST_STATUS_ELEVATION_NOT_FOUND;
+        } else {
+            p.elevation=[height floatValue];
+        }
         
         [_results addObject:p];
         
