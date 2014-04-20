@@ -63,7 +63,7 @@
     if ([points count]%MAPQUEST_API_MAX_POINTS_PER_REQUEST!=0) _numberOfRequests++;
     _numberOfRequestsLeftToProcess=_numberOfRequests;
     
-    TGLog(@"%lu requests required", _numberOfRequests);
+    //TGLog(@"%lu requests required", _numberOfRequests);
     
     // build requests based on API limits.
     NSMutableArray* reqarr=[[NSMutableArray alloc] initWithCapacity:0];
@@ -102,7 +102,9 @@
 
 
 #pragma mark GOOGLE
-
+// google has 2 APIs
+//    1. a collection of points
+//    2. a path with a given number of points.
 // http://maps.googleapis.com/maps/api/elevation/json?locations=39.7391536,-104.9847034|36.455556,-116.866667&sensor=true_or_false&key=API_KEY
 // http://maps.googleapis.com/maps/api/elevation/json?path=36.578581,-118.291994|36.23998,-116.83171&samples=3&sensor=true_or_false&key=API_KEY
 -(void) queryGoogleLocations:(NSString*)locationsString
@@ -144,8 +146,7 @@
 }
 
 #pragma mark MAPQEUST
-
-
+// mapquest only has one API - a collection of points.
 -(void) MapquestResponse:(NSDictionary*) dict
 {
     TGLog(@"processing %lu/%lu", _numberOfRequestsLeftToProcess, _numberOfRequests);

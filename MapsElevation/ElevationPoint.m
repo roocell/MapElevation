@@ -11,11 +11,15 @@
 @implementation ElevationPoint
 @synthesize elevation=_elevation;
 @synthesize coordinate=_coordinate;
-
+@synthesize color=_color;
 
 -(id) init
 {
-    self=[super init];
-    return self;
+    if (self=[super init])
+    {
+        _color=[UIColor blackColor];
+        return self;
+    }
+    return nil;
 }
 @end

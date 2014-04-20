@@ -8,6 +8,7 @@
 
 #import "elevationViewController.h"
 #import "ElevationGrid.h"
+#import "ElevationPoint.h"
 
 @interface elevationViewController ()
 
@@ -70,7 +71,22 @@
     [_mapView removeAnnotations:[_mapView annotations]];
     ElevationGrid* grid=[[ElevationGrid alloc] initWithCenterCoordinate:_mapView.centerCoordinate withWidth:[self getMapWidthInMeters] usingBlock:^(NSMutableArray* points)
      {
-         TGLog(@"ElevationGrid complete");
+         //TGLog(@"ElevationGrid complete");
+         
+         // find min/max
+         float max=0;
+         float min=99999999.9;
+         for (ElevationPoint* p in points)
+         {
+             if (p.elevation>max) max=p.elevation;
+             if (p.elevation<min) min=p.elevation;
+         }
+         
+         
+         for (ElevationPoint* p in points)
+         {
+             [self addPin:p.coordinate withTitle:[NSString stringWithFormat:@"%f", p.elevation]];
+         }
      }];
 
  
