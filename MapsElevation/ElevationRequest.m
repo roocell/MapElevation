@@ -148,7 +148,7 @@
 // mapquest only has one API - a collection of points.
 -(void) MapquestResponse:(NSDictionary*) dict
 {
-    TGLog(@"processing %lu/%lu", _numberOfRequestsLeftToProcess, _numberOfRequests);
+    //TGLog(@"processing %lu/%lu", _numberOfRequestsLeftToProcess, _numberOfRequests);
     
     //TGLog(@"%@", dict);
     NSDictionary *info = [dict valueForKey:@"info"];

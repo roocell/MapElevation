@@ -247,7 +247,7 @@ float getDist(float lat1, float long1, float lat2, float long2)
                                 p.maxima+=(z-bb);
                                 p.maxima+=(z-tt);
                             
-                            TGLog(@"[%f,%f][%d,%d,%d] z %7.1f %7.1f,%7.1f,%7.1f,%7.1f,%7.1f,%7.1f,%7.1f,%7.1f m %7.1f", cgrid[x][y].coordinate.latitude, cgrid[x][y].coordinate.longitude, x,y,l,z, rt,rr,rb,lt,ll,lb,bb,tt,p.maxima);
+                            //TGLog(@"[%f,%f][%d,%d,%d] z %7.1f %7.1f,%7.1f,%7.1f,%7.1f,%7.1f,%7.1f,%7.1f,%7.1f m %7.1f", cgrid[x][y].coordinate.latitude, cgrid[x][y].coordinate.longitude, x,y,l,z, rt,rr,rb,lt,ll,lb,bb,tt,p.maxima);
                         }
                     }
                 }
