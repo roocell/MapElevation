@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+#import "ElevationGrid.h"
 
 @interface elevationViewController : UIViewController <MKMapViewDelegate>
 @property (retain, nonatomic) IBOutlet MKMapView* mapView;
@@ -15,9 +16,8 @@
 @property (retain, nonatomic) IBOutlet UIButton* top5Button;
 @property (retain, nonatomic) IBOutlet UIButton* findSpotsButton;
 @property (retain, nonatomic) IBOutlet UIActivityIndicatorView* loader;
+@property (retain, nonatomic) ElevationGrid* grid;
 
-
-@property (retain, nonatomic) NSMutableArray* grid; // lat/lng of points to grab elevation from google API
 @property (retain, nonatomic) NSMutableArray* data; // google's data for the grid
 @property (retain, nonatomic) NSMutableArray* top5; // 5 highest points.
 

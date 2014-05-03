@@ -7,7 +7,6 @@
 //
 
 #import "ElevationRequest.h"
-#import "AFHTTPRequestOperationManager.h"
 
 #define GOOGLE_API_KEY @"AIzaSyA7KcdzIJ5avApvg3l8AT_vamtDCpYL9gI"
 #define GOOGLE_ELEVATION_URL_LOCATIONS @"https://maps.googleapis.com/maps/api/elevation/json?locations=%@&sensor=true&key=%@"
@@ -32,6 +31,7 @@
 @synthesize numberOfRequests=_numberOfRequests;
 @synthesize numberOfRequestsLeftToProcess=_numberOfRequestsLeftToProcess;
 @synthesize results=_results;
+@synthesize manager=_manager;
 
 -(id) initWithQueryArray:(NSMutableArray*) points usingBlock:(ElevationRequestBlock)delegate
 {
@@ -148,7 +148,7 @@
 // mapquest only has one API - a collection of points.
 -(void) MapquestResponse:(NSDictionary*) dict
 {
-    //TGLog(@"processing %lu/%lu", _numberOfRequestsLeftToProcess, _numberOfRequests);
+    TGLog(@"processing %lu/%lu", _numberOfRequestsLeftToProcess, _numberOfRequests);
     
     //TGLog(@"%@", dict);
     NSDictionary *info = [dict valueForKey:@"info"];
@@ -226,8 +226,11 @@
                                                                  kCFStringEncodingUTF8 );
 #endif
     
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    [manager GET:escapedUrlString parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    //TGLog(@"%@", escapedUrlString);
+    
+    _manager = [AFHTTPRequestOperationManager manager];
+    
+    [_manager GET:escapedUrlString parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
         //TGLog(@"JSON: %@", responseObject);
 #if 0
         NSError * error = nil;
@@ -247,6 +250,11 @@
 
 }
 
+-(void) cancel
+{
+    TGLog(@"cancelling");
+    [_manager.operationQueue cancelAllOperations];
 
+}
 
 @end
