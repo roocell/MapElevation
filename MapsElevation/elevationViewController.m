@@ -7,7 +7,6 @@
 //
 
 #import "elevationViewController.h"
-#import "ElevationGrid.h"
 #import "ElevationPoint.h"
 
 @interface elevationViewController ()
@@ -28,8 +27,6 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    
-    _grid=[NSMutableArray arrayWithCapacity:0];
     
     [self setMapOttawa:_mapView];
 }
@@ -69,7 +66,9 @@
 {
     //[self showUser];
     [_mapView removeAnnotations:[_mapView annotations]];
-    ElevationGrid* grid=[[ElevationGrid alloc] initWithCenterCoordinate:_mapView.centerCoordinate withWidth:[self getMapWidthInMeters] usingBlock:^(NSMutableArray* points)
+    _grid=[[ElevationGrid alloc] initWithCenterCoordinate:_mapView.centerCoordinate withWidth:[self getMapWidthInMeters]];
+                         
+    [_grid runUsingBlock:^(NSMutableArray* points)
      {
          //TGLog(@"ElevationGrid complete");
                   
@@ -87,25 +86,6 @@
 
 -(IBAction)top5ButtonPressed:(id)sender
 {
-    [_mapView removeAnnotations:[_mapView annotations]];
-
-    NSArray *sortedArray = [_grid sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-        NSNumber *first = [(NSDictionary*)a valueForKey:@"elevation"];
-        NSNumber *second = [(NSDictionary*)b valueForKey:@"elevation"];
-        if ([first compare:second]==NSOrderedAscending) return NSOrderedDescending;
-        else if ([first compare:second]==NSOrderedDescending) return NSOrderedAscending;
-        return [first compare:second];
-    }];
-    
-    // display the top 5 grid points
-    int i=0;
-    for (NSDictionary* item in sortedArray)
-    {
-        CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([[item valueForKey:@"latitude"] floatValue], [[item valueForKey:@"longitude"] floatValue]);
-        [self addPin:coordinate withTitle:[NSString stringWithFormat:@"%@",[item valueForKey:@"elevation"]] withSubtitle:nil];
-        i++;
-        if (i>5) break;
-    }
 }
 -(IBAction)findSpotsButtonPressed:(id)sender
 {

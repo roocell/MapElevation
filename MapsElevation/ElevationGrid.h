@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
+#import "ElevationRequest.h"
 
 typedef void (^ElevationGridBlock)(NSMutableArray*);
 
@@ -16,8 +17,11 @@ typedef void (^ElevationGridBlock)(NSMutableArray*);
     @protected ElevationGridBlock delegateBlock;
 }
 @property (retain, nonatomic) NSMutableArray* grid; // an array of arrays of ElevationPoints
+@property (retain, nonatomic) NSMutableArray* requests; // an array of arrays of ElevationRequest
+@property CLLocationCoordinate2D centerCoordinate;
+@property float width;
 
-
--(id) initWithCenterCoordinate:(CLLocationCoordinate2D) centerCoordinate withWidth:(float) width usingBlock:(ElevationGridBlock) delegate;
+-(id) initWithCenterCoordinate:(CLLocationCoordinate2D) centerCoordinate withWidth:(float) width;
+-(void) runUsingBlock:(ElevationGridBlock) delegate;
 
 @end

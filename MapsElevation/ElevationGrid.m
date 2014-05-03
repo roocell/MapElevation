@@ -7,7 +7,6 @@
 //
 
 #import "ElevationGrid.h"
-#import "ElevationRequest.h"
 
 @interface ElevationGrid ()
 @property (nonatomic, copy) ElevationGridBlock delegateBlock; // Attention: Copy the block and not retain it
@@ -16,17 +15,28 @@
 @implementation ElevationGrid
 @synthesize delegateBlock;
 @synthesize grid=_grid;
+@synthesize requests=_requests;
+@synthesize centerCoordinate=_centerCoordinate;
+@synthesize width=_width;
 
--(id) initWithCenterCoordinate:(CLLocationCoordinate2D) centerCoordinate withWidth:(float) width usingBlock:(ElevationGridBlock) delegate;
+-(id) initWithCenterCoordinate:(CLLocationCoordinate2D) centerCoordinate withWidth:(float) width;
 {
     if (self=[super init])
     {
-        self.delegateBlock = delegate;
         _grid=[[NSMutableArray alloc] initWithCapacity:0];
-        [self buildGridPoints:centerCoordinate withWidth:width];
+        _requests=[[NSMutableArray alloc] initWithCapacity:0];
+        _centerCoordinate=centerCoordinate;
+        _width=width;
+        
         return self;
     }
     return nil;
+}
+
+-(void) runUsingBlock:(ElevationGridBlock) delegate
+{
+    self.delegateBlock = delegate;
+    [self buildGridPoints:_centerCoordinate withWidth:_width];
 }
 
 #define RADIUS 50*1000 // m
@@ -72,6 +82,16 @@ float getDist(float lat1, float long1, float lat2, float long2)
 {
     // build a grid of coordinates around the user's position
     [_grid removeAllObjects];
+    ElevationRequest* evr;
+    TGLog(@"cancelling...%lu", [_requests count]);
+    for (evr in _requests)
+    {
+        TGLog(@"cancelling...%@", evr);
+        if (evr) [evr cancel];
+    }
+    [_requests removeAllObjects];
+    
+    TGLog(@"Starting SCAN ....");
     
     int scanArea=width/2;
     
@@ -109,7 +129,7 @@ float getDist(float lat1, float long1, float lat2, float long2)
         p.latitude=start.latitude;
         p.longitude+=delta;
         
-        ElevationRequest* request=[[ElevationRequest alloc] initWithQueryArray:path usingBlock:^(NSMutableArray* points)
+        evr=[[ElevationRequest alloc] initWithQueryArray:path usingBlock:^(NSMutableArray* points)
         {
             int x,y;
             //TGLog(@"ElevationRequest complete %lu points", [points count]);
@@ -149,7 +169,7 @@ float getDist(float lat1, float long1, float lat2, float long2)
                 // calc maxima/minima
 #define ELEVATION_DELTA 0 // must be at least Xm different to consider maxima/minima
 #define NEIGHBOURHOOD 5  // pick maxima at least this many points apart
-                for (int l=0; l<3; l++)
+                for (int l=1; l<=3; l++)
                 {
                     float delta=ELEVATION_DELTA*(l+1);
                     for (y=0; y<rows; y++)
@@ -162,24 +182,46 @@ float getDist(float lat1, float long1, float lat2, float long2)
                             if (x-l<0) continue;
                             if (x+l>=cols) continue;
                             ElevationPoint* p=[row objectAtIndex:x];
-                            float a,b,c,d, z;
+                            float rt,rr,rb,bb,lb,ll,lt,tt, z;
+                            
+                            // all points around z
                             
                             z=cgrid[x][y].elevation;
                             if (z==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
-                            a=cgrid[x-l][y-l].elevation;
-                            if (a==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
-                            b=cgrid[x][y-l].elevation;
-                            if (b==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
-                            c=cgrid[x+l][y].elevation;
-                            if (c==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
                             
+                            rt=cgrid[x+l][y+l].elevation;
+                            if (rt==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
+                            rr=cgrid[x+l][y].elevation;
+                            if (rr==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
+                            rb=cgrid[x+l][y-l].elevation;
+                            if (rb==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
+
+                            lt=cgrid[x-l][y+l].elevation;
+                            if (lt==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
+                            ll=cgrid[x-l][y-l].elevation;
+                            if (ll==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
+                            lb=cgrid[x-1][y-l].elevation;
+                            if (lb==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
+
+                            bb=cgrid[x][y-l].elevation;
+                            if (bb==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
+                            tt=cgrid[x][y+l].elevation;
+                            if (tt==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
 
                             
                                 //p.maxima+=1.0;
-                                p.maxima+=(z-a);
-                                p.maxima+=(z-b);
-                                p.maxima+=(z-c);
-                                p.maxima+=(z-d);
+                                p.maxima+=(z-rt);
+                                p.maxima+=(z-rr);
+                                p.maxima+=(z-rb);
+                            
+                                p.maxima+=(z-lt);
+                                p.maxima+=(z-ll);
+                                p.maxima+=(z-lb);
+                            
+                                p.maxima+=(z-bb);
+                                p.maxima+=(z-tt);
+                            
+                            TGLog(@"[%f,%f][%d,%d,%d] z %7.1f %7.1f,%7.1f,%7.1f,%7.1f,%7.1f,%7.1f,%7.1f,%7.1f m %7.1f", cgrid[x][y].coordinate.latitude, cgrid[x][y].coordinate.longitude, x,y,l,z, rt,rr,rb,lt,ll,lb,bb,tt,p.maxima);
                         }
                     }
                 }
@@ -190,15 +232,18 @@ float getDist(float lat1, float long1, float lat2, float long2)
                     [sort addObjectsFromArray:a];
                 }
                 NSArray *sortedMaxima = [sort sortedArrayUsingComparator:^NSComparisonResult(ElevationPoint* p1, ElevationPoint* p2) {
+                    //TGLog(@"%f<>%f", p1.maxima, p2.maxima);
                     if (p1.maxima>p2.maxima) return NSOrderedAscending;
                     else if (p1.maxima<p2.maxima) return NSOrderedDescending;
                     return NSOrderedSame;
                 }];
+#if 0
                 NSArray *sortedMinima = [sort sortedArrayUsingComparator:^NSComparisonResult(ElevationPoint* p1, ElevationPoint* p2) {
                     if (p1.minima>p2.minima) return NSOrderedAscending;
                     else if (p1.minima<p2.minima) return NSOrderedDescending;
                     return NSOrderedSame;
                 }];
+#endif
                 
                 NSMutableArray* maxima=[[NSMutableArray alloc] initWithCapacity:0];
                 NSMutableArray* minima=[[NSMutableArray alloc] initWithCapacity:0];
@@ -210,6 +255,7 @@ float getDist(float lat1, float long1, float lat2, float long2)
                     [minima addObject:[sortedMaxima objectAtIndex:[sortedMaxima count]-m]];
                 }
 #else
+                
                 while (m<5)
                 {
                     for (ElevationPoint* p in sortedMaxima)
@@ -241,7 +287,7 @@ float getDist(float lat1, float long1, float lat2, float long2)
                 {
                     for (unsigned long q=[sortedMaxima count]-1; q>0; q--)
                     {
-                        ElevationPoint* p=[sortedMaxima objectAtIndex:q];
+                       ElevationPoint* p=[sortedMaxima objectAtIndex:q];
                         // make sure we dont pick a maxima near another one.
                         int near=0;
                         for (int n=0; n<m; n++)
@@ -256,7 +302,7 @@ float getDist(float lat1, float long1, float lat2, float long2)
                         }
                         if (!near)
                         {
-                            TGLog(@"minima %f elev %f [%f,%f]", p.minima, p.elevation, p.coordinate.latitude, p.coordinate.longitude);
+                            TGLog(@"minima %f elev %f [%f,%f]", p.maxima, p.elevation, p.coordinate.latitude, p.coordinate.longitude);
                             p.color=MKPinAnnotationColorRed;
                             [minima addObject:p];
                             m++;
@@ -271,7 +317,8 @@ float getDist(float lat1, float long1, float lat2, float long2)
             }
             
         }];
-        
+        TGLog(@"adding request %@", evr);
+        [_requests addObject:evr];
         [path removeAllObjects];
     }
     
