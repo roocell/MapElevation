@@ -65,6 +65,8 @@
 -(IBAction)locationButtonPressed:(id)sender
 {
     //[self showUser];
+    _loader.hidden=FALSE;
+    [_loader startAnimating];
     [_mapView removeAnnotations:[_mapView annotations]];
     _grid=[[ElevationGrid alloc] initWithCenterCoordinate:_mapView.centerCoordinate withWidth:[self getMapWidthInMeters]];
                          
@@ -79,6 +81,7 @@
              else if (p.color==MKPinAnnotationColorRed) sub=@"minima";
              [self addPin:p.coordinate withTitle:[NSString stringWithFormat:@"%f", p.elevation] withSubtitle:sub];
          }
+         [_loader stopAnimating];
      }];
 
  
