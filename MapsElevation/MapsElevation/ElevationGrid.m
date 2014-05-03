@@ -91,7 +91,7 @@ float getDist(float lat1, float long1, float lat2, float long2)
     }
     [_requests removeAllObjects];
     
-    TGLog(@"Starting SCAN ....");
+    TGLog(@"Starting SCAN ....[%f,%f]", centerCoordinate.latitude, centerCoordinate.longitude);
     
     int scanArea=width/2;
     
@@ -134,11 +134,29 @@ float getDist(float lat1, float long1, float lat2, float long2)
             int x,y;
             //TGLog(@"ElevationRequest complete %lu points", [points count]);
             
-            [_grid addObject:points];
+            // points need to be in order of latitude.
+            NSArray *sortedLatitude = [points sortedArrayUsingComparator:^NSComparisonResult(ElevationPoint* p1, ElevationPoint* p2) {
+                if (p1.coordinate.latitude>p2.coordinate.latitude) return NSOrderedAscending;
+                else if (p1.coordinate.latitude<p2.coordinate.latitude) return NSOrderedDescending;
+                return NSOrderedSame;
+            }];
+            
+            [_grid addObject:sortedLatitude];
             
             // did we get them all ?
             if ([_grid count]>=rows)
             {
+                // the grid needs to be sorted by longitude
+                NSArray *sortedLongitude = [_grid sortedArrayUsingComparator:^NSComparisonResult(NSMutableArray* arr1, NSMutableArray* arr2) {
+                    ElevationPoint* p1=[arr1 objectAtIndex:0];
+                    ElevationPoint* p2=[arr2 objectAtIndex:0];
+                    if (p1.coordinate.longitude>p2.coordinate.longitude) return NSOrderedAscending;
+                    else if (p1.coordinate.longitude<p2.coordinate.longitude) return NSOrderedDescending;
+                    return NSOrderedSame;
+                }];
+                [_grid removeAllObjects];
+                [_grid addObjectsFromArray:sortedLongitude];
+                
                 TGLog(@"start maxima calculation");
                 ElevationPoint_c cgrid[rows][cols];
                 // put into C grid
@@ -185,6 +203,14 @@ float getDist(float lat1, float long1, float lat2, float long2)
                             float rt,rr,rb,bb,lb,ll,lt,tt, z;
                             
                             // all points around z
+                            
+#if 0
+                            // DEBUG sanity check that coords are in order x,y
+                            if (cgrid[x][y+l].coordinate.longitude > cgrid[x][y].coordinate.longitude) TGLog(@"ERR %d %d lng+", x, y);
+                            if (cgrid[x][y-l].coordinate.longitude < cgrid[x][y].coordinate.longitude) TGLog(@"ERR %d %d lng-", x, y);
+                            if (cgrid[x+1][y].coordinate.latitude > cgrid[x][y].coordinate.latitude) TGLog(@"ERR %d %d lat+", x, y);
+                            if (cgrid[x-1][y].coordinate.latitude < cgrid[x][y].coordinate.latitude) TGLog(@"ERR %d %d lat-", x, y);
+#endif
                             
                             z=cgrid[x][y].elevation;
                             if (z==MAPQUEST_STATUS_ELEVATION_NOT_FOUND) continue;
@@ -317,7 +343,6 @@ float getDist(float lat1, float long1, float lat2, float long2)
             }
             
         }];
-        TGLog(@"adding request %@", evr);
         [_requests addObject:evr];
         [path removeAllObjects];
     }
