@@ -27,8 +27,8 @@
                                 <rect key="frame" x="142" y="231" width="37" height="37"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </activityIndicatorView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="grm-P8-QqK">
-                                <rect key="frame" x="20" y="525" width="42" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="grm-P8-QqK">
+                                <rect key="frame" x="20" y="521" width="68" height="34"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="locate"/>
@@ -36,15 +36,15 @@
                                     <action selector="locationButtonPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="4aL-jr-TgL"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tho-vr-Xbl">
-                                <rect key="frame" x="268" y="525" width="32" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tho-vr-Xbl">
+                                <rect key="frame" x="237" y="522" width="70" height="33"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <state key="normal" title="top5">
+                                <state key="normal" title="roads">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <action selector="top5ButtonPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="pRa-Vk-f3f"/>
+                                    <action selector="roadsButtonPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="NG3-Rg-Mew"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -58,6 +58,7 @@
                     <connections>
                         <outlet property="loader" destination="9K4-IT-Ior" id="Fgv-dK-mKh"/>
                         <outlet property="mapView" destination="NfQ-pM-yfi" id="FxV-37-2lN"/>
+                        <outlet property="roadsButton" destination="tho-vr-Xbl" id="DC7-gJ-8Ng"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>

@@ -70,6 +70,7 @@
     {
         for (i=0; i<MAPQUEST_API_MAX_POINTS_PER_REQUEST; i++)
         {
+            if ([points count]%MAPQUEST_API_MAX_POINTS_PER_REQUEST && i>=[points count]%MAPQUEST_API_MAX_POINTS_PER_REQUEST) break;
             ElevationPoint* p=[points objectAtIndex:i+r*MAPQUEST_API_MAX_POINTS_PER_REQUEST];
             [reqarr addObject:p];
         }
@@ -126,7 +127,6 @@
     [manager GET:escapedUrlString parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
         TGLog(@"JSON: %@", responseObject);
         
-        
         NSError * error = nil;
         NSData *data = [responseObject  dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
@@ -135,7 +135,6 @@
             TGLog(@"%@", error);
             return;
         }
-        
         
         
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -226,7 +225,7 @@
                                                                  kCFStringEncodingUTF8 );
 #endif
     
-    //TGLog(@"%@", escapedUrlString);
+    TGLog(@"%@", escapedUrlString);
     
     _manager = [AFHTTPRequestOperationManager manager];
     
