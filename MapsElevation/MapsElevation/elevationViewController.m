@@ -16,18 +16,18 @@
 @implementation elevationViewController
 @synthesize mapView=_mapView;
 @synthesize locationButton=_locationButton;
+@synthesize roadsButton=_roadsButton;
 @synthesize findSpotsButton=_findSpotsButton;
 @synthesize grid=_grid;
-@synthesize data=_data;
-@synthesize top5=_top5;
-@synthesize routes=_routes;
 @synthesize loader=_loader;
+@synthesize roads=_roads;
+@synthesize routeLines=_routeLines;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    
+    _routeLines=[NSMutableArray array];
     [self setMapOttawa:_mapView];
 }
 
@@ -87,9 +87,71 @@
  
 }
 
--(IBAction)top5ButtonPressed:(id)sender
+-(IBAction)roadsButtonPressed:(id)sender
 {
+    _loader.hidden=FALSE;
+    [_loader startAnimating];
+    [_mapView removeAnnotations:[_mapView annotations]];
+
+    
+    MKMapRect mRect = self.mapView.visibleMapRect;
+    MKMapPoint neMapPoint = MKMapPointMake(MKMapRectGetMaxX(mRect), mRect.origin.y);
+    MKMapPoint swMapPoint = MKMapPointMake(mRect.origin.x, MKMapRectGetMaxY(mRect));
+    CLLocationCoordinate2D neCoord = MKCoordinateForMapPoint(neMapPoint);
+    CLLocationCoordinate2D swCoord = MKCoordinateForMapPoint(swMapPoint);
+    
+    float width=fabs(neCoord.latitude-swCoord.latitude);
+    TGLog(@"%f", width);
+    
+    if (width>0.02)
+    {
+        UIAlertView* alert=[[UIAlertView alloc] initWithTitle:@"Zoom in" message:[NSString stringWithFormat:@"Too large of an area (%f). Please zoom in.", width]
+													 delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil];
+		[alert show];
+        [_loader stopAnimating];
+        return;
+    }
+
+    
+    BoundingBox bbox;
+    bbox.left=neCoord.latitude;
+    bbox.right=swCoord.latitude;
+    bbox.top=neCoord.longitude;
+    bbox.bottom=swCoord.longitude;
+    
+    _roads=[[ElevationRoads alloc] initWithBoundingBox:bbox];
+    [_roads runUsingBlock:^(NSMutableArray* ways)
+     {
+         for (NSDictionary* w in ways)
+         {
+             NSArray* points=[w objectForKey:@"points"];
+             
+             // calculate the drop of the way
+             ElevationPoint* p1=[points objectAtIndex:0];
+             ElevationPoint* p2=[points objectAtIndex:[points count]-1];
+             float drop=fabs(p1.elevation-p2.elevation);
+             UIColor* color=[UIColor blueColor];
+             if (drop>1) color=[UIColor greenColor];
+             else if (drop>2) color=[UIColor yellowColor];
+             else if (drop>3) color=[UIColor orangeColor];
+             else if (drop>4) color=[UIColor redColor];
+             
+             [self addRoute:points withColor:color];
+             [_mapView setNeedsDisplay];
+
+#if 1
+             int i=0;
+             for (ElevationPoint* p in points)
+             {
+                 [self addPin:p.coordinate withTitle:[NSString stringWithFormat:@"%f", p.elevation] withSubtitle:[NSString stringWithFormat:@"%d", i]];
+                 i++;
+             }
+#endif
+         }
+         [_loader stopAnimating];
+     }];
 }
+
 -(IBAction)findSpotsButtonPressed:(id)sender
 {
     
@@ -152,7 +214,7 @@
 
 - (void)mapViewDidFailLoadingMap:(MKMapView *)mapView withError:(NSError *)error
 {
-    
+    TGLog(@"%@", error);
 }
 
 - (void)mapViewDidFinishLoadingMap:(MKMapView *)mapView
@@ -203,5 +265,69 @@
 {
     
 }
+
+- (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id <MKOverlay>)overlay
+{
+	MKOverlayView* overlayView = nil;
+
+    // TODO: is there a more efficient way to do this?
+    // like not cache the polyline view?
+	for (NSMutableDictionary* d in _routeLines)
+    {
+        MKPolyline* routeLine=[d objectForKey:@"line"];
+        if(overlay == routeLine)
+        {
+            //if we have not yet created an overlay view for this overlay, create it now.
+            overlayView=[d objectForKey:@"view"];
+            if(overlayView==nil)
+            {
+                MKPolylineView* poly=[[MKPolylineView alloc] initWithPolyline:routeLine];
+                //poly.fillColor = [UIColor redColor];
+                poly.strokeColor = [d objectForKey:@"color"];
+                poly.lineWidth = 5;
+                [d setValue:poly forKey:@"view"];
+                overlayView=[d objectForKey:@"view"];
+            }
+        }
+    }
+	return overlayView;
+}
+
+
+- (void) addRoute:(NSArray*) route withColor:(UIColor*) color
+{
+	// while we create the route points, we will also be calculating the bounding box of our route
+	// so we can easily zoom in on it.
+	MKMapPoint northEastPoint;
+	MKMapPoint southWestPoint;
+	
+	northEastPoint.x=northEastPoint.y=0.0;
+	southWestPoint.x=southWestPoint.y=0.0;
+	
+	// create a c array of points.
+	MKMapPoint* pointArr = malloc(sizeof(MKMapPoint) * [route count]);
+    ElevationPoint* p;
+    int idx=0;
+	for(p in route)
+	{
+		MKMapPoint point = MKMapPointForCoordinate(p.coordinate);
+		pointArr[idx] = point;
+		idx++;
+	}
+	
+	// create the polyline based on the array of points.
+    MKPolyline* routeLine=[MKPolyline polylineWithPoints:pointArr count:[route count]];
+    NSMutableDictionary* d=[NSMutableDictionary dictionary];
+    [d setValue:routeLine forKey:@"line"];
+    [d setValue:color forKey:@"color"];
+    [_routeLines addObject:d];
+	    
+	// clear the memory allocated earlier for the points
+	free(pointArr);
+	
+	// add the overlay to the map
+    [_mapView addOverlay:routeLine level:MKOverlayLevelAboveRoads];
+}
+
 
 @end

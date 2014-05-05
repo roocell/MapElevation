@@ -12,6 +12,7 @@
 @synthesize elevation=_elevation;
 @synthesize coordinate=_coordinate;
 @synthesize color=_color;
+@synthesize title=_title;
 
 -(id) init
 {

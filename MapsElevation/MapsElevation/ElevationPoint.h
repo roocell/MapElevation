@@ -23,4 +23,5 @@ typedef struct {
 @property int     row;
 @property int     col;
 @property int color;
+@property (retain, nonatomic) NSString* title;
 @end
