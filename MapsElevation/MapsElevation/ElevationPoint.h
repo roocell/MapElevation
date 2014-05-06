@@ -23,5 +23,6 @@ typedef struct {
 @property int     row;
 @property int     col;
 @property int color;
+@property NSUInteger idx;
 @property (retain, nonatomic) NSString* title;
 @end

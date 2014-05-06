@@ -19,6 +19,7 @@ typedef void (^ElevationRequestBlock)(NSMutableArray*);
 }
 @property unsigned long numberOfRequests;
 @property unsigned long numberOfRequestsLeftToProcess;
+@property (nonatomic, retain) NSMutableArray* points;
 @property (nonatomic, retain) NSMutableArray* results;
 @property (nonatomic, retain) AFHTTPRequestOperationManager *manager;
 

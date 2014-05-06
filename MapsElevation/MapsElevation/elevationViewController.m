@@ -92,7 +92,7 @@
     _loader.hidden=FALSE;
     [_loader startAnimating];
     [_mapView removeAnnotations:[_mapView annotations]];
-
+    [_mapView removeOverlays:[_mapView overlays]];
     
     MKMapRect mRect = self.mapView.visibleMapRect;
     MKMapPoint neMapPoint = MKMapPointMake(MKMapRectGetMaxX(mRect), mRect.origin.y);
@@ -131,19 +131,21 @@
              ElevationPoint* p2=[points objectAtIndex:[points count]-1];
              float drop=fabs(p1.elevation-p2.elevation);
              UIColor* color=[UIColor blueColor];
-             if (drop>1) color=[UIColor greenColor];
-             else if (drop>2) color=[UIColor yellowColor];
-             else if (drop>3) color=[UIColor orangeColor];
-             else if (drop>4) color=[UIColor redColor];
+             if (drop>3.0) color=[UIColor greenColor];
+             if (drop>6.0) color=[UIColor yellowColor];
+             if (drop>9.0) color=[UIColor orangeColor];
+             if (drop>12.0) color=[UIColor redColor];
              
              [self addRoute:points withColor:color];
              [_mapView setNeedsDisplay];
 
-#if 1
+             //[self addPin:p1.coordinate withTitle:[NSString stringWithFormat:@"%f", p1.elevation] withSubtitle:[NSString stringWithFormat:@"S w %lu d %2.0f", [ways indexOfObject:w], drop]];
+             //[self addPin:p2.coordinate withTitle:[NSString stringWithFormat:@"%f", p2.elevation] withSubtitle:[NSString stringWithFormat:@"F w %lu d %2.0f", [ways indexOfObject:w], drop]];
+#if 0
              int i=0;
              for (ElevationPoint* p in points)
              {
-                 [self addPin:p.coordinate withTitle:[NSString stringWithFormat:@"%f", p.elevation] withSubtitle:[NSString stringWithFormat:@"%d", i]];
+                 [self addPin:p.coordinate withTitle:[NSString stringWithFormat:@"%f", p.elevation] withSubtitle:[NSString stringWithFormat:@"w %lu %d d %2.0f", [ways indexOfObject:w], i, drop]];
                  i++;
              }
 #endif
