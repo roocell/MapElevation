@@ -13,7 +13,7 @@
 @synthesize coordinate=_coordinate;
 @synthesize color=_color;
 @synthesize title=_title;
-
+@synthesize idx=idx;
 -(id) init
 {
     if (self=[super init])

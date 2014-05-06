@@ -31,6 +31,7 @@
 @synthesize numberOfRequests=_numberOfRequests;
 @synthesize numberOfRequestsLeftToProcess=_numberOfRequestsLeftToProcess;
 @synthesize results=_results;
+@synthesize points=_points;
 @synthesize manager=_manager;
 
 -(id) initWithQueryArray:(NSMutableArray*) points usingBlock:(ElevationRequestBlock)delegate
@@ -39,6 +40,7 @@
     {
         self.delegateBlock = delegate;
         _results=[[NSMutableArray alloc] initWithCapacity:0];
+        _points=[NSMutableArray arrayWithArray:points];
         [self QueryElevations:points];
         return self;
     }
@@ -190,19 +192,30 @@
             p.elevation=[height floatValue];
         }
         
+        // to maintain order we need to find the point and set the idx, then sort before we call the delegate
+        // we have to do this because the elevation requests can come back at different times.
+        for (ElevationPoint* sp in _points)
+        {
+            if (sp.coordinate.latitude==p.coordinate.latitude && sp.coordinate.longitude==p.coordinate.longitude)
+            {
+                p.idx=sp.idx;
+                break;
+            }
+        }
+        
         [_results addObject:p];
-        
-        //NSDictionary* elevDict=[NSDictionary dictionaryWithObjectsAndKeys:lat, @"latitude", lng, @"longitude", height, @"elevation", nil];
-        //[_grid addObject:elevDict];
-        
-        //CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([lat floatValue], [lng floatValue]);
-        //[self addPin:coordinate withTitle:nil];
-        
+                
     }
     _numberOfRequestsLeftToProcess--;
     if (_numberOfRequestsLeftToProcess==0)
     {
-        delegateBlock(_results);
+        // now sort to maintain order
+        NSArray *rr = [_results sortedArrayUsingComparator:^NSComparisonResult(ElevationPoint* p1, ElevationPoint* p2) {
+            if (p1.idx>p2.idx) return NSOrderedAscending;
+            else if (p1.idx<p2.idx) return NSOrderedDescending;
+            return NSOrderedSame;
+        }];
+        delegateBlock([NSMutableArray arrayWithArray:rr]);
     }
     
 }

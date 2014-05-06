@@ -78,7 +78,9 @@
                 NSMutableArray* waynodes=[_currentWay objectForKey:@"points"];
                 ElevationPoint* p=[[ElevationPoint alloc] init];
                 p.coordinate=CLLocationCoordinate2DMake([[n objectForKey:@"lat"] floatValue], [[n objectForKey:@"lon"] floatValue]);
-                [waynodes setObject:p atIndexedSubscript:[waynodes count]]; // to force in order?
+                p.idx=[waynodes count];
+                //[waynodes setObject:p atIndexedSubscript:[waynodes count]]; // to force in order?
+                [waynodes addObject:p];
             }
         }
     }
@@ -127,6 +129,7 @@
     for (__block NSDictionary* w in _ways)
     {
         NSMutableArray* waypoints=[w objectForKey:@"points"];
+        
         TGLog(@"getting elevation for way %lu (%lu points)", [_ways indexOfObject:w], [waypoints count]);
         if ([waypoints count]<=0)
         {
