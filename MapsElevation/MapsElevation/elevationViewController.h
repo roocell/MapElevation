@@ -28,4 +28,6 @@
 -(IBAction)roadsButtonPressed:(id)sender;
 -(IBAction)findSpotsButtonPressed:(id)sender;
 
+-(void) addPin:(CLLocationCoordinate2D) p withTitle:(NSString*) title withSubtitle:(NSString*) sub;
+
 @end

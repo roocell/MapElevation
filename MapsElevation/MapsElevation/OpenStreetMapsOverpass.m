@@ -16,6 +16,9 @@
 #import "ElevationPoint.h"
 #import "ElevationRequest.h"
 
+#import "elevationAppDelegate.h"
+#import "elevationViewController.h"
+
 //#define WAY_TAGS 1
 
 @interface OpenStreetMapsOverpass ()
@@ -120,6 +123,7 @@
     }
     [_requests removeAllObjects];
 
+    _ways=[self AdjustWays:_ways];
     
     // spawn off some elevation requests
     // two ways to do this
@@ -136,6 +140,7 @@
             TGLog(@"not waypoints for way %lu (%lu points)", [_ways indexOfObject:w], [waypoints count]);
             continue;
         }
+        
         evr=[[ElevationRequest alloc] initWithQueryArray:waypoints usingBlock:^(NSMutableArray* points)
         {
             wcnt++;
@@ -183,6 +188,159 @@
         TGLog(@"Error: %@", error);
     }];
 
+}
+
+-(CLLocationCoordinate2D) getDestination:(CLLocationCoordinate2D) startCoord withDistance:(float)meters andBearing:(float) bearing
+{
+    float lat1 = deg2rad(startCoord.latitude);
+    float lng1 = deg2rad(startCoord.longitude);
+    
+    meters = meters/EARTH_RADIUS_M;
+    bearing = deg2rad(bearing);
+    
+    float lat2 = asin( sin(lat1)*cos(meters) +
+                      cos(lat1)*sin(meters)*cos(bearing) );
+    float lng2 = lng1+ atan2(sin(bearing)*sin(meters)*cos(lat1),
+                             cos(meters)-sin(lat1)*sin(lat2));
+    lng2 = fmod((lng2+3*PI),(2*PI)) - PI;
+    
+    return CLLocationCoordinate2DMake(rad2deg(lat2),rad2deg(lng2));
+}
+
+
+// This will find ways that exceed WAY_DISTANCE and replace them
+// with smaller ways.
+// We want to do this because sometimes a way coming back from overpass
+// can be very long and taking the drop (slope) from that way and colouring it
+// will produce undesired colouring.
+
+#define WAY_DISTANCE 250.0 // meters
+-(NSMutableArray*) AdjustWays:(NSMutableArray*) ways
+{
+    elevationAppDelegate* appdel = (elevationAppDelegate*)[[UIApplication sharedApplication] delegate];
+    elevationViewController* vc=(elevationViewController*)appdel.window.rootViewController;
+    
+    NSMutableArray* n_ways=[NSMutableArray array];
+    TGLog(@"%d ways", (int)[ways count]);
+    int wcnt=0;
+    for (NSDictionary* w in ways)
+    {
+        wcnt++;
+        NSArray* points=[w objectForKey:@"points"];
+        ElevationPoint* p1;
+        ElevationPoint* p2;
+        ElevationPoint* p3;
+        
+        p1=[points objectAtIndex:0];
+        p2=[points objectAtIndex:[points count]-1];
+        
+        TGLog(@"WAY %d with %d points", wcnt, (int)[points count]);
+        
+        // sometimes the way can be very long - we need to break it down into smaller chunks.
+        float dist=getDist(p1.coordinate.latitude, p1.coordinate.longitude, p2.coordinate.latitude, p2.coordinate.longitude);
+        if (dist>WAY_DISTANCE)
+        {
+            TGLog(@"way %d is too long %f - break it up. %d points", wcnt, dist, (int)[points count]);
+            
+            // go through the points and add in points every 50m for sections that are too long.
+            NSMutableArray* n_points=[NSMutableArray array];
+            [n_points addObject:[points objectAtIndex:0]];
+            for (int wp=0; wp<[points count]-1; wp++)
+            {
+                p1=[points objectAtIndex:wp];
+                p2=[points objectAtIndex:wp+1];
+                
+                dist=getDist(p1.coordinate.latitude, p1.coordinate.longitude, p2.coordinate.latitude, p2.coordinate.longitude);
+                if (dist>WAY_DISTANCE)
+                {
+                    TGLog(@"section %d needs to be broken up (%fm)", wp, dist);
+                    TGLog(@"\t start pt %f,%f", p1.coordinate.latitude, p1.coordinate.longitude);
+                    // the two points are too far away - need to break it up into 50m sections
+                    int sections=dist/WAY_DISTANCE+1;
+                    float lat1=deg2rad(p1.coordinate.latitude);
+                    float lng1=p1.coordinate.longitude;
+                    float lat2=deg2rad(p2.coordinate.latitude);
+                    float lng2=p2.coordinate.longitude;
+                    float dlng=deg2rad(lng2-lng1);
+                    float bearing2=getBearing(lat1, lng2, lat2, lng2);
+                    float bearing=rad2deg(atan2(
+                                         sin(dlng)*cos(lat2),
+                                         cos(lat1)*sin(lat2)-sin(lat1)*cos(lat2)*cos(dlng)
+                                         ));
+                    bearing=fmodf(bearing+360.0, 360.0);
+                    TGLog(@"\tbreaking way section %d into %d %5.0fm parts (bearing %f)", wp, sections, WAY_DISTANCE, bearing);
+                    for (int s=0; s<sections; s++)
+                    {
+                        p3=[[ElevationPoint alloc] init];
+                        p3.coordinate=[self getDestination:p1.coordinate withDistance:WAY_DISTANCE andBearing:bearing];
+                        TGLog(@"\t new pt %f,%f", p3.coordinate.latitude, p3.coordinate.longitude);
+                        [n_points addObject:p3];
+                        //[vc addPin:p3.coordinate withTitle:[NSString stringWithFormat:@"W %d, s %d", wcnt, s] withSubtitle:nil];
+                    }
+                    // sections were up to before the last point - so we have to add it.
+                    [n_points addObject:p2];
+                } else {
+                    //TGLog(@"section %d is short enough %f", wp, dist);
+                    [n_points addObject:p2];
+                }
+            }
+            // we only have to rebuild the way if the number of points has changed.
+            if ([n_points count]!=[points count])
+            {
+                points=n_points;
+                TGLog(@"WAY %d now has %d points", wcnt, (int)[points count]);
+                
+                // go through points and build new ways.
+                // there will be some with multiple points
+                //    - these were from the original way and are for things like tight curves
+                // then there will be some with just 2 points
+                //    - these are from the above loops where we create sections
+                int last_wp2=0;
+                for (int wp1=0; wp1<[points count]; wp1++)
+                {
+                    if (last_wp2) wp1=last_wp2; // restart wp1 loop at wp2
+                    last_wp2=0;
+
+                    NSMutableArray* wp_points=[NSMutableArray array];
+                    p1=[points objectAtIndex:wp1];
+                    [wp_points addObject:p1];
+                    TGLog(@"building new way start %d", wp1);
+                    for (int wp2=wp1+1; wp2<[points count]; wp2++)
+                    {
+                        p2=[points objectAtIndex:wp2];
+                        [wp_points addObject:p2];
+                        if (wp2<[points count]-1) p3=[points objectAtIndex:wp2+1]; // next point
+                        else p3=p2; // if it's the last one - use this distance.
+                        
+                        // is the next point long enough or have we reached the end of the way?
+                        dist=getDist(p1.coordinate.latitude, p1.coordinate.longitude, p3.coordinate.latitude, p3.coordinate.longitude);
+                        if (dist>=WAY_DISTANCE || wp2>=[points count]-1)
+                        {
+                            // build way
+                            TGLog(@"creating a new way [%d->%d] with %d points (dist %f)", wp1, wp2, (int)[wp_points count], dist);
+                            NSMutableDictionary* way=[NSMutableDictionary dictionaryWithDictionary:w];
+                            [way removeObjectForKey:@"points"];
+                            [way setObject:wp_points forKey:@"points"];
+                            [n_ways addObject:way];
+                            
+                            last_wp2=wp2;
+                            wp2=(int)[points count]; // exit wp2 loop
+                        }
+                    }
+                }
+            } else {
+                TGLog(@"WAY %d is ok - we can continue using the original way", wcnt);
+                [n_ways addObject:w];
+            }
+        } else {
+            // no need to break it down
+            TGLog(@"Way is short enough to plot %f", dist);
+            [n_ways addObject:w];
+        }
+    }
+    TGLog(@"the number of ways has changed from %d -> %d", (int)[ways count], (int)[n_ways count]);
+    
+    return n_ways;
 }
 
 @end

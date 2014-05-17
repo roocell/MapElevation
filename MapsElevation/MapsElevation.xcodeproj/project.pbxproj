@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7D1247C61927D18F00A6E8BC /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D1247C51927D18F00A6E8BC /* util.c */; };
 		7D2725D7191674210001A666 /* OpenStreetMapsOverpass.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D2725D6191674210001A666 /* OpenStreetMapsOverpass.m */; };
 		7D2725DA19167D5E0001A666 /* ElevationRoads.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D2725D919167D5E0001A666 /* ElevationRoads.m */; };
 		7D2725DD191683EE0001A666 /* MkMapKitRoads.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D2725DC191683EE0001A666 /* MkMapKitRoads.m */; };
@@ -55,6 +56,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7D1247C51927D18F00A6E8BC /* util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = util.c; sourceTree = "<group>"; };
 		7D2725D5191674200001A666 /* OpenStreetMapsOverpass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenStreetMapsOverpass.h; sourceTree = "<group>"; };
 		7D2725D6191674210001A666 /* OpenStreetMapsOverpass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenStreetMapsOverpass.m; sourceTree = "<group>"; };
 		7D2725D819167D5E0001A666 /* ElevationRoads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElevationRoads.h; sourceTree = "<group>"; };
@@ -211,6 +213,7 @@
 			children = (
 				7D780AA61902A8F7001EDA7E /* AFNetworking */,
 				7D99FE1B18F0315B00EBC6C2 /* util.h */,
+				7D1247C51927D18F00A6E8BC /* util.c */,
 				7D2725DB191683ED0001A666 /* MkMapKitRoads.h */,
 				7D2725DC191683EE0001A666 /* MkMapKitRoads.m */,
 				7D2725D5191674200001A666 /* OpenStreetMapsOverpass.h */,
@@ -365,6 +368,7 @@
 			files = (
 				7D2725D7191674210001A666 /* OpenStreetMapsOverpass.m in Sources */,
 				7D2725DD191683EE0001A666 /* MkMapKitRoads.m in Sources */,
+				7D1247C61927D18F00A6E8BC /* util.c in Sources */,
 				7D780ABB1902A8F7001EDA7E /* AFHTTPRequestOperationManager.m in Sources */,
 				7D99FDF418F0309600EBC6C2 /* elevationAppDelegate.m in Sources */,
 				7D780ABF1902A8F7001EDA7E /* AFURLConnectionOperation.m in Sources */,
