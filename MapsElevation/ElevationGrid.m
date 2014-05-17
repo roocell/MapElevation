@@ -40,33 +40,14 @@
 }
 
 #define RADIUS 50*1000 // m
-#define PI 3.14159265
-#define EARTH_RADIUS_METERS 6378100
 #define GRID_POINTS_PER_ROW 32
-float deg2rad(float deg)
-{
-	return deg*PI/180;
-}
-float rad2deg(float rad)
-{
-	return rad*180/PI;
-}
-float getDist(float lat1, float long1, float lat2, float long2)
-{
-	// haversine formula
-	float dlat= lat1-lat2;
-	float dlong= long1-long2;
-	float a=pow( sin(deg2rad(dlat)/2) ,2) + cos(deg2rad (lat1)) * cos(deg2rad(lat2)) * pow(sin(deg2rad(dlong)/2),2);
-	float c=2*atan2(sqrt(a), sqrt(1-a));
-	float dist=EARTH_RADIUS_METERS*c;
-	return dist;
-}
+
 -(CLLocationCoordinate2D) getDestination:(CLLocationCoordinate2D) startCoord withDistance:(float)meters andBearing:(float) bearing
 {
     float lat1 = deg2rad(startCoord.latitude);
     float lng1 = deg2rad(startCoord.longitude);
     
-    meters = meters/EARTH_RADIUS_METERS;
+    meters = meters/EARTH_RADIUS_M;
     bearing = deg2rad(bearing);
     
     float lat2 = asin( sin(lat1)*cos(meters) +

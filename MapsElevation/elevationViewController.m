@@ -87,6 +87,17 @@
  
 }
 
+-(UIColor*) getWayColor:(ElevationPoint*) p1 withEnd:(ElevationPoint*) p2
+{
+    float drop=fabs(p1.elevation-p2.elevation);
+    UIColor* color=[UIColor blueColor];
+    if (drop>3.0) color=[UIColor greenColor];
+    if (drop>6.0) color=[UIColor yellowColor];
+    if (drop>9.0) color=[UIColor orangeColor];
+    if (drop>12.0) color=[UIColor redColor];
+    return color;
+}
+
 -(IBAction)roadsButtonPressed:(id)sender
 {
     _loader.hidden=FALSE;
@@ -125,22 +136,15 @@
          for (NSDictionary* w in ways)
          {
              NSArray* points=[w objectForKey:@"points"];
-             
-             // calculate the drop of the way
              ElevationPoint* p1=[points objectAtIndex:0];
              ElevationPoint* p2=[points objectAtIndex:[points count]-1];
-             float drop=fabs(p1.elevation-p2.elevation);
-             UIColor* color=[UIColor blueColor];
-             if (drop>3.0) color=[UIColor greenColor];
-             if (drop>6.0) color=[UIColor yellowColor];
-             if (drop>9.0) color=[UIColor orangeColor];
-             if (drop>12.0) color=[UIColor redColor];
              
-             [self addRoute:points withColor:color];
+             // calculate the drop of the way             
+             [self addRoute:points withColor:[self getWayColor:p1 withEnd:p2]];
              [_mapView setNeedsDisplay];
 
-             //[self addPin:p1.coordinate withTitle:[NSString stringWithFormat:@"%f", p1.elevation] withSubtitle:[NSString stringWithFormat:@"S w %lu d %2.0f", [ways indexOfObject:w], drop]];
-             //[self addPin:p2.coordinate withTitle:[NSString stringWithFormat:@"%f", p2.elevation] withSubtitle:[NSString stringWithFormat:@"F w %lu d %2.0f", [ways indexOfObject:w], drop]];
+             //[self addPin:p1.coordinate withTitle:[NSString stringWithFormat:@"%f", p1.elevation] withSubtitle:[NSString stringWithFormat:@"S w %lu d %2.0f", [ways indexOfObject:w], 0]];
+             //[self addPin:p2.coordinate withTitle:[NSString stringWithFormat:@"%f", p2.elevation] withSubtitle:[NSString stringWithFormat:@"F w %lu d %2.0f", [ways indexOfObject:w], 0]];
 #if 0
              int i=0;
              for (ElevationPoint* p in points)

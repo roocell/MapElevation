@@ -5,7 +5,6 @@
  *  Copyright 2010 Thumb Genius Software. All rights reserved.
  *
  */
-
 #define APP_VERSION         ([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"])
 #define APP_VERSION_BUILD   ([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"])
 #define APP_BUNDLE_ID       ([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"])
@@ -22,3 +21,10 @@
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 #define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 #define SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
+
+#define PI 3.14159265
+#define EARTH_RADIUS_M 6378100
+float deg2rad(float val);
+float rad2deg(float rad);
+float getDist(float lat1, float long1, float lat2, float long2);
+float getBearing(float startLat,float startLong,float endLat,float endLong);

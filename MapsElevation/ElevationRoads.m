@@ -31,19 +31,15 @@
     return nil;
 
 }
+
 -(void) runUsingBlock:(ElevationRoadsBlock) delegate
 {
     self.delegateBlock = delegate;
  
-    [_overpass runUsingBlock:^(NSMutableArray* points)
+    [_overpass runUsingBlock:^(NSMutableArray* ways)
      {
-         // returns points without elevation
-         // we need to build a elevation request and fill in the elevation
-         for (ElevationPoint* p in points)
-         {
-             
-         }
-         delegateBlock(points);
+
+         delegateBlock(ways);
          
      }];
 
