@@ -274,53 +274,57 @@
                     [n_points addObject:p2];
                 }
             }
+            
             // we only have to rebuild the way if the number of points has changed.
             if ([n_points count]!=[points count])
             {
-                points=n_points;
                 TGLog(@"WAY %d now has %d points", wcnt, (int)[points count]);
-                
-                // go through points and build new ways.
-                // there will be some with multiple points
-                //    - these were from the original way and are for things like tight curves
-                // then there will be some with just 2 points
-                //    - these are from the above loops where we create sections
-                int last_wp2=0;
-                for (int wp1=0; wp1<[points count]; wp1++)
-                {
-                    if (last_wp2) wp1=last_wp2; // restart wp1 loop at wp2
-                    last_wp2=0;
+            }
+            int n_way_cnt=0;
+            points=n_points;
+        
+            // go through points and build new ways.
+            // there will be some with multiple points
+            //    - these were from the original way and are for things like tight curves
+            // then there will be some with just 2 points
+            //    - these are from the above loops where we create sections
+            int last_wp2=0;
+            for (int wp1=0; wp1<[points count]; wp1++)
+            {
+                if (last_wp2) wp1=last_wp2; // restart wp1 loop at wp2
+                last_wp2=0;
 
-                    NSMutableArray* wp_points=[NSMutableArray array];
-                    p1=[points objectAtIndex:wp1];
-                    [wp_points addObject:p1];
-                    TGLog(@"building new way start %d", wp1);
-                    for (int wp2=wp1+1; wp2<[points count]; wp2++)
+                NSMutableArray* wp_points=[NSMutableArray array];
+                p1=[points objectAtIndex:wp1];
+                [wp_points addObject:p1];
+                //TGLog(@"\tbuilding new way start %d", wp1);
+                for (int wp2=wp1+1; wp2<[points count]; wp2++)
+                {
+                    p2=[points objectAtIndex:wp2];
+                    [wp_points addObject:p2];
+                    if (wp2<[points count]-1) p3=[points objectAtIndex:wp2+1]; // next point
+                    else p3=p2; // if it's the last one - use this distance.
+                    
+                    // is the next point long enough or have we reached the end of the way?
+                    dist=getDist(p1.coordinate.latitude, p1.coordinate.longitude, p3.coordinate.latitude, p3.coordinate.longitude);
+                    if (dist>=WAY_DISTANCE || wp2>=[points count]-1)
                     {
-                        p2=[points objectAtIndex:wp2];
-                        [wp_points addObject:p2];
-                        if (wp2<[points count]-1) p3=[points objectAtIndex:wp2+1]; // next point
-                        else p3=p2; // if it's the last one - use this distance.
-                        
-                        // is the next point long enough or have we reached the end of the way?
-                        dist=getDist(p1.coordinate.latitude, p1.coordinate.longitude, p3.coordinate.latitude, p3.coordinate.longitude);
-                        if (dist>=WAY_DISTANCE || wp2>=[points count]-1)
-                        {
-                            // build way
-                            TGLog(@"creating a new way [%d->%d] with %d points (dist %f)", wp1, wp2, (int)[wp_points count], dist);
-                            NSMutableDictionary* way=[NSMutableDictionary dictionaryWithDictionary:w];
-                            [way removeObjectForKey:@"points"];
-                            [way setObject:wp_points forKey:@"points"];
-                            [n_ways addObject:way];
-                            
-                            last_wp2=wp2;
-                            wp2=(int)[points count]; // exit wp2 loop
-                        }
+                        // build way
+                        TGLog(@"\tcreating a new way [%d->%d] with %d points (dist %f)", wp1, wp2, (int)[wp_points count], dist);
+                        NSMutableDictionary* way=[NSMutableDictionary dictionaryWithDictionary:w];
+                        [way removeObjectForKey:@"points"];
+                        [way setObject:wp_points forKey:@"points"];
+                        [n_ways addObject:way];
+                        n_way_cnt++;
+                        last_wp2=wp2;
+                        wp2=(int)[points count]; // exit wp2 loop
                     }
                 }
-            } else {
-                TGLog(@"WAY %d is ok - we can continue using the original way", wcnt);
-                [n_ways addObject:w];
+            }
+            if (n_way_cnt) TGLog(@"WAY %d was broken up into %d ways", wcnt, n_way_cnt);
+            else {
+                TGLog(@"WAY %d ERR - didnt get broken up", wcnt);
+                [n_ways addObject:w]; // add it anyways
             }
         } else {
             // no need to break it down
@@ -328,7 +332,7 @@
             [n_ways addObject:w];
         }
     }
-    TGLog(@"the number of ways has changed from %d -> %d", (int)[ways count], (int)[n_ways count]);
+    TGLog(@"the number of ways has changed from %d -> %d",(int)[ways count], (int)[n_ways count]);
     
     return n_ways;
 }

@@ -11,6 +11,7 @@
 #import "CSMapAnnotation.h"
 #import "CSViewAnnotationView.h"
 #import "ElevationDirectionTriangle.h"
+#import "MKPolygon+Attribs.h"
 
 @interface elevationViewController ()
 
@@ -185,6 +186,7 @@
     poly_coords[3]=p1.coordinate;
 
     MKPolygon *polygon = [MKPolygon polygonWithCoordinates:poly_coords count:3];
+    polygon.color=color;
     [_mapView addOverlay:polygon];
 #endif
     
@@ -395,13 +397,14 @@
 	MKOverlayView* overlayView = nil;
 
     if ([overlay isKindOfClass:MKPolygon.class]) {
+        MKPolygon* polygon=(MKPolygon*)overlay;
         MKPolygonView *polygonView = [[MKPolygonView alloc] initWithOverlay:overlay];
         polygonView.strokeColor = [UIColor clearColor];
         polygonView.lineWidth = 1;
-        polygonView.fillColor = [UIColor blackColor];
+        polygonView.fillColor = polygon.color;
         return polygonView;
     }
-    // TODO: is there a more efficient way to do this?
+    // TODO: is there a more efficient way to do this?  => yes - use a category like we did for MKPolygon
     // like not cache the polyline view?
 	for (NSMutableDictionary* d in _routeLines)
     {
