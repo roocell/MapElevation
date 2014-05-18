@@ -257,17 +257,7 @@
                     TGLog(@"\t start pt %f,%f", p1.coordinate.latitude, p1.coordinate.longitude);
                     // the two points are too far away - need to break it up into 50m sections
                     int sections=dist/WAY_DISTANCE+1;
-                    float lat1=deg2rad(p1.coordinate.latitude);
-                    float lng1=p1.coordinate.longitude;
-                    float lat2=deg2rad(p2.coordinate.latitude);
-                    float lng2=p2.coordinate.longitude;
-                    float dlng=deg2rad(lng2-lng1);
-                    float bearing2=getBearing(lat1, lng2, lat2, lng2);
-                    float bearing=rad2deg(atan2(
-                                         sin(dlng)*cos(lat2),
-                                         cos(lat1)*sin(lat2)-sin(lat1)*cos(lat2)*cos(dlng)
-                                         ));
-                    bearing=fmodf(bearing+360.0, 360.0);
+                    float bearing=getBearing(p1.coordinate.latitude, p1.coordinate.longitude, p2.coordinate.latitude, p2.coordinate.longitude);
                     TGLog(@"\tbreaking way section %d into %d %5.0fm parts (bearing %f)", wp, sections, WAY_DISTANCE, bearing);
                     for (int s=0; s<sections; s++)
                     {

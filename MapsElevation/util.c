@@ -29,8 +29,10 @@ float getDist(float lat1, float long1, float lat2, float long2)
 	return dist;
 }
 
-float getBearing(float lat1,float lat2,float lng1,float lng2)
+float getBearing(float lat1,float lng1,float lat2,float lng2)
 {
+    lat1=deg2rad(lat1);
+    lat2=deg2rad(lat2);
     float dlng=deg2rad(lng2-lng1);
     float bearing=rad2deg(atan2(
                                 sin(dlng)*cos(lat2),
