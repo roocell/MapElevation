@@ -8,6 +8,9 @@
 
 #import "elevationViewController.h"
 #import "ElevationPoint.h"
+#import "CSMapAnnotation.h"
+#import "CSViewAnnotationView.h"
+#import "ElevationDirectionTriangle.h"
 
 @interface elevationViewController ()
 
@@ -98,6 +101,95 @@
     return color;
 }
 
+-(CLLocationCoordinate2D)midpointBetweenCoordinate:(CLLocationCoordinate2D)c1 andCoordinate:(CLLocationCoordinate2D)c2
+{
+    c1.latitude = deg2rad(c1.latitude);
+    c2.latitude = deg2rad(c2.latitude);
+    CLLocationDegrees dLon = deg2rad(c2.longitude - c1.longitude);
+    CLLocationDegrees bx = cos(c2.latitude) * cos(dLon);
+    CLLocationDegrees by = cos(c2.latitude) * sin(dLon);
+    CLLocationDegrees latitude = atan2(sin(c1.latitude) + sin(c2.latitude), sqrt((cos(c1.latitude) + bx) * (cos(c1.latitude) + bx) + by*by));
+    CLLocationDegrees longitude = deg2rad(c1.longitude) + atan2(by, cos(c1.latitude) + bx);
+    
+    CLLocationCoordinate2D midpointCoordinate;
+    midpointCoordinate.longitude = rad2deg(longitude);
+    midpointCoordinate.latitude = rad2deg(latitude);
+    
+    return midpointCoordinate;
+}
+
+-(CLLocationCoordinate2D) getDestination:(CLLocationCoordinate2D) startCoord withDistance:(float)meters andBearing:(float) bearing
+{
+    float lat1 = deg2rad(startCoord.latitude);
+    float lng1 = deg2rad(startCoord.longitude);
+    
+    meters = meters/EARTH_RADIUS_M;
+    bearing = deg2rad(bearing);
+    
+    float lat2 = asin( sin(lat1)*cos(meters) +
+                      cos(lat1)*sin(meters)*cos(bearing) );
+    float lng2 = lng1+ atan2(sin(bearing)*sin(meters)*cos(lat1),
+                             cos(meters)-sin(lat1)*sin(lat2));
+    lng2 = fmod((lng2+3*PI),(2*PI)) - PI;
+    
+    return CLLocationCoordinate2DMake(rad2deg(lat2),rad2deg(lng2));
+}
+
+
+-(void) AddArrowForWay:(NSDictionary*) way withColor:(UIColor*) color
+{
+    NSArray* points=[way objectForKey:@"points"];
+    ElevationPoint* p1=[points objectAtIndex:0];
+    ElevationPoint* p2=[points objectAtIndex:[points count]-1];
+    float drop=p1.elevation-p2.elevation;
+
+    
+    // just pick a point from the array - cant use midpoint on curves
+    if ([points count]>2)
+    {
+        p1=[points objectAtIndex:[points count]/2-1];
+        p2=[points objectAtIndex:[points count]/2];
+    } else {
+        // dont want to use an endpoint because it gets confusing at intersections - so find middle
+        p1.coordinate =[self midpointBetweenCoordinate:p1.coordinate andCoordinate:p2.coordinate];
+    }
+    
+    float bearing=getBearing(p1.coordinate.latitude, p1.coordinate.longitude, p2.coordinate.latitude, p2.coordinate.longitude);
+    if (drop<0) bearing=fmodf(bearing+180.0, 360.0); // make it face the other way
+
+    // build triangle around midpoint
+
+#if 0
+    CSMapAnnotation* annotation = [[CSMapAnnotation alloc] initWithCoordinate:p1.coordinate
+                                              annotationType:CSMapAnnotationTypeView
+                                                       title:@""
+                                                    subtitle:@""
+                                             reuseIdentifier:@"triangle"];
+    
+    annotation.customView=[[ElevationDirectionTriangle alloc] initWithFrame:CGRectMake(0, 0, 30, 30) fillColor:color withBearing:bearing];
+    annotation.label=@"";
+    annotation.userObject=nil;
+    annotation.bearing=bearing;
+    [_mapView addAnnotation:annotation];
+#else
+    // mkpolygon overlay
+    CLLocationCoordinate2D poly_coords[4];
+    poly_coords[0]=[self getDestination:p1.coordinate withDistance:10.0 andBearing:bearing];
+
+    float leftPt=fmodf(bearing-110.0, 360.0);
+    float rightPt=fmodf(bearing+110.0, 360.0);
+    
+    poly_coords[1]=[self getDestination:p1.coordinate withDistance:10.0 andBearing:leftPt];
+    poly_coords[2]=[self getDestination:p1.coordinate withDistance:10.0 andBearing:rightPt];
+
+    poly_coords[3]=p1.coordinate;
+
+    MKPolygon *polygon = [MKPolygon polygonWithCoordinates:poly_coords count:3];
+    [_mapView addOverlay:polygon];
+#endif
+    
+}
+
 -(IBAction)roadsButtonPressed:(id)sender
 {
     _loader.hidden=FALSE;
@@ -139,8 +231,11 @@
              ElevationPoint* p1=[points objectAtIndex:0];
              ElevationPoint* p2=[points objectAtIndex:[points count]-1];
              
-             // calculate the drop of the way             
-             [self addRoute:points withColor:[self getWayColor:p1 withEnd:p2]];
+             // calculate the drop of the way
+             UIColor* color=[self getWayColor:p1 withEnd:p2];
+             [self addRoute:points withColor:color];
+             [self AddArrowForWay:w withColor:color];
+             
              [_mapView setNeedsDisplay];
 
              //[self addPin:p1.coordinate withTitle:[NSString stringWithFormat:@"%f", p1.elevation] withSubtitle:[NSString stringWithFormat:@"S w %lu d %2.0f", [ways indexOfObject:w], 0]];
@@ -229,6 +324,29 @@
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation {
+    MKAnnotationView* annotationView = nil;
+
+	if (annotation == mapView.userLocation){
+		return nil; //default to blue dot
+	}
+
+    CSMapAnnotation* csAnnotation = (CSMapAnnotation*)annotation;
+    if(csAnnotation.annotationType == CSMapAnnotationTypeView)
+    {
+        NSString* identifier = csAnnotation.reuseIdentifier;
+        CSViewAnnotationView* vAnnotationView = [[CSViewAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:identifier];
+        annotationView = vAnnotationView;
+        //annotationView.centerOffset = CGPointMake(0, ANNO_OFFSET); // move it up slight so the point appears on the spot
+        //annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+        [annotationView setEnabled:NO];
+        [annotationView setCanShowCallout:NO];
+
+        CGAffineTransform transform = CGAffineTransformMakeRotation(deg2rad(csAnnotation.bearing));
+        annotationView.transform = transform;
+
+        return annotationView;
+    }
+    
     //create annotation
     MKPinAnnotationView *pinView = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pinView"];
     if (!pinView) {
@@ -276,6 +394,13 @@
 {
 	MKOverlayView* overlayView = nil;
 
+    if ([overlay isKindOfClass:MKPolygon.class]) {
+        MKPolygonView *polygonView = [[MKPolygonView alloc] initWithOverlay:overlay];
+        polygonView.strokeColor = [UIColor clearColor];
+        polygonView.lineWidth = 1;
+        polygonView.fillColor = [UIColor blackColor];
+        return polygonView;
+    }
     // TODO: is there a more efficient way to do this?
     // like not cache the polyline view?
 	for (NSMutableDictionary* d in _routeLines)
