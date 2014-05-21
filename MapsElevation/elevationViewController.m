@@ -91,14 +91,30 @@
  
 }
 
--(UIColor*) getWayColor:(ElevationPoint*) p1 withEnd:(ElevationPoint*) p2
+-(UIColor*) getWayColor:(NSDictionary*) way
 {
+    UIColor* color=[UIColor clearColor];
+    NSArray* points=[way objectForKey:@"points"];
+    ElevationPoint* p1=[points objectAtIndex:0];
+    ElevationPoint* p2=[points objectAtIndex:[points count]-1];
+#if 0
     float drop=fabs(p1.elevation-p2.elevation);
-    UIColor* color=[UIColor blueColor];
-    if (drop>3.0) color=[UIColor greenColor];
-    if (drop>6.0) color=[UIColor yellowColor];
-    if (drop>9.0) color=[UIColor orangeColor];
     if (drop>12.0) color=[UIColor redColor];
+    else if (drop>9.0) color=[UIColor orangeColor];
+    else if (drop>6.0) color=[UIColor yellowColor];
+    else if (drop>3.0) color=[UIColor greenColor];
+#else
+    // use slope
+    float dist=[[way objectForKey:@"distance"] floatValue];
+    float slope=100*fabs(p1.elevation-p2.elevation)/dist;
+    
+    if (slope>SLOPE_RED)            color=[UIColor redColor];
+    else if (slope>SLOPE_ORANGE)    color=[UIColor orangeColor];
+    else if (slope>SLOPE_YELLOW)    color=[UIColor yellowColor];
+    else if (slope>SLOPE_GREEN)     color=[UIColor greenColor];
+    else if (slope>SLOPE_BLUE)      color=[UIColor blueColor];
+    
+#endif
     return color;
 }
 
@@ -191,6 +207,20 @@
 #endif
     
 }
+                                                 
+-(void) WayDistance:(NSMutableDictionary*) way
+{
+    NSArray* points=[way objectForKey:@"points"];
+    float dist=0;
+    for (int i=0; i<[points count]-1; i++)
+    {
+        ElevationPoint* p1=[points objectAtIndex:i];
+        ElevationPoint* p2=[points objectAtIndex:i+1];
+        dist+=getDist(p1.coordinate.latitude, p1.coordinate.longitude, p2.coordinate.latitude, p2.coordinate.longitude);
+    }
+    [way setValue:[NSNumber numberWithFloat:dist] forKey:@"distance"];
+}
+                                          
 
 -(IBAction)roadsButtonPressed:(id)sender
 {
@@ -205,12 +235,12 @@
     CLLocationCoordinate2D neCoord = MKCoordinateForMapPoint(neMapPoint);
     CLLocationCoordinate2D swCoord = MKCoordinateForMapPoint(swMapPoint);
     
-    float width=fabs(neCoord.latitude-swCoord.latitude);
-    TGLog(@"%f", width);
+    float dist=getDist(neCoord.latitude, neCoord.longitude, swCoord.latitude, swCoord.longitude);
+    TGLog(@"%f", dist);
     
-    if (width>0.02)
+    if (MAP_ZOOM_LIMIT && dist>MAP_ZOOM_LIMIT)
     {
-        UIAlertView* alert=[[UIAlertView alloc] initWithTitle:@"Zoom in" message:[NSString stringWithFormat:@"Too large of an area (%f). Please zoom in.", width]
+        UIAlertView* alert=[[UIAlertView alloc] initWithTitle:@"Zoom in" message:[NSString stringWithFormat:@"Too large of an area (%fm). Please zoom in.", dist]
 													 delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil];
 		[alert show];
         [_loader stopAnimating];
@@ -227,22 +257,25 @@
     _roads=[[ElevationRoads alloc] initWithBoundingBox:bbox];
     [_roads runUsingBlock:^(NSMutableArray* ways)
      {
-         for (NSDictionary* w in ways)
+         for (NSMutableDictionary* w in ways)
          {
              NSArray* points=[w objectForKey:@"points"];
-             ElevationPoint* p1=[points objectAtIndex:0];
-             ElevationPoint* p2=[points objectAtIndex:[points count]-1];
+
+             [self WayDistance:w];
              
              // calculate the drop of the way
-             UIColor* color=[self getWayColor:p1 withEnd:p2];
-             [self addRoute:points withColor:color];
-             [self AddArrowForWay:w withColor:color];
-             
-             [_mapView setNeedsDisplay];
+             UIColor* color=[self getWayColor:w];
+             if (color.CGColor!=[UIColor clearColor].CGColor)
+             {
+                 [self addRoute:points withColor:color];
+                 [self AddArrowForWay:w withColor:color];
+             }
 
              //[self addPin:p1.coordinate withTitle:[NSString stringWithFormat:@"%f", p1.elevation] withSubtitle:[NSString stringWithFormat:@"S w %lu d %2.0f", [ways indexOfObject:w], 0]];
              //[self addPin:p2.coordinate withTitle:[NSString stringWithFormat:@"%f", p2.elevation] withSubtitle:[NSString stringWithFormat:@"F w %lu d %2.0f", [ways indexOfObject:w], 0]];
 #if 0
+             ElevationPoint* p1=[points objectAtIndex:0];
+             ElevationPoint* p2=[points objectAtIndex:[points count]-1];
              int i=0;
              for (ElevationPoint* p in points)
              {
@@ -251,6 +284,7 @@
              }
 #endif
          }
+         [_mapView setNeedsDisplay];
          [_loader stopAnimating];
      }];
 }

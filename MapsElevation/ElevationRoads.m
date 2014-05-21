@@ -32,6 +32,21 @@
 
 }
 
+-(float) WayDistance:(NSDictionary*) way
+{
+    NSArray* points=[way objectForKey:@"points"];
+    float dist=0;
+    for (int i=0; i<[points count]-1; i++)
+    {
+        ElevationPoint* p1=[points objectAtIndex:i];
+        ElevationPoint* p2=[points objectAtIndex:i+1];
+        dist+=getDist(p1.coordinate.latitude, p1.coordinate.longitude, p2.coordinate.latitude, p2.coordinate.longitude);
+    }
+    return dist;
+}
+
+
+
 -(void) runUsingBlock:(ElevationRoadsBlock) delegate
 {
     self.delegateBlock = delegate;
@@ -39,6 +54,7 @@
     [_overpass runUsingBlock:^(NSMutableArray* ways)
      {
 
+         
          delegateBlock(ways);
          
      }];

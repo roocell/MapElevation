@@ -105,7 +105,7 @@
     if (_currentWay) [_ways addObject:_currentWay]; // add the last way
     TGLog(@"%lu ways", [_ways count]);
     
-    if ([_ways count]>128)
+    if (WAY_QUERY_LIMIT && [_ways count]>WAY_QUERY_LIMIT)
     {
         UIAlertView* alert=[[UIAlertView alloc] initWithTitle:@"Zoom in" message:[NSString stringWithFormat:@"Too many paths (%lu) for this area. Please zoom in.",[_ways count]]
 													 delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil];
@@ -207,14 +207,12 @@
     return CLLocationCoordinate2DMake(rad2deg(lat2),rad2deg(lng2));
 }
 
-
 // This will find ways that exceed WAY_DISTANCE and replace them
 // with smaller ways.
 // We want to do this because sometimes a way coming back from overpass
 // can be very long and taking the drop (slope) from that way and colouring it
 // will produce undesired colouring.
 
-#define WAY_DISTANCE 250.0 // meters
 -(NSMutableArray*) AdjustWays:(NSMutableArray*) ways
 {
     elevationAppDelegate* appdel = (elevationAppDelegate*)[[UIApplication sharedApplication] delegate];
