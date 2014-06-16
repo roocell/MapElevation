@@ -19,6 +19,7 @@
 		7D760E4C19282DBD003B74FE /* CSMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D760E4719282DBD003B74FE /* CSMapAnnotation.m */; };
 		7D760E4D19282DBD003B74FE /* CSViewAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D760E4919282DBD003B74FE /* CSViewAnnotationView.m */; };
 		7D760E5019286035003B74FE /* MKPolygon+Attribs.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D760E4F19286035003B74FE /* MKPolygon+Attribs.m */; };
+		7D760E56192E48D4003B74FE /* MKPolyline+Attribs.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D760E55192E48D4003B74FE /* MKPolyline+Attribs.m */; };
 		7D780AA51902A857001EDA7E /* ElevationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AA41902A857001EDA7E /* ElevationRequest.m */; };
 		7D780ABA1902A8F7001EDA7E /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AA81902A8F7001EDA7E /* AFHTTPRequestOperation.m */; };
 		7D780ABB1902A8F7001EDA7E /* AFHTTPRequestOperationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D780AAA1902A8F7001EDA7E /* AFHTTPRequestOperationManager.m */; };
@@ -83,6 +84,8 @@
 		7D760E4919282DBD003B74FE /* CSViewAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSViewAnnotationView.m; sourceTree = "<group>"; };
 		7D760E4E19286035003B74FE /* MKPolygon+Attribs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKPolygon+Attribs.h"; sourceTree = "<group>"; };
 		7D760E4F19286035003B74FE /* MKPolygon+Attribs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MKPolygon+Attribs.m"; sourceTree = "<group>"; };
+		7D760E54192E48D4003B74FE /* MKPolyline+Attribs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKPolyline+Attribs.h"; sourceTree = "<group>"; };
+		7D760E55192E48D4003B74FE /* MKPolyline+Attribs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MKPolyline+Attribs.m"; sourceTree = "<group>"; };
 		7D780AA31902A857001EDA7E /* ElevationRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElevationRequest.h; sourceTree = "<group>"; };
 		7D780AA41902A857001EDA7E /* ElevationRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ElevationRequest.m; sourceTree = "<group>"; };
 		7D780AA71902A8F7001EDA7E /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
@@ -248,6 +251,8 @@
 				7D780AA61902A8F7001EDA7E /* AFNetworking */,
 				7D99FE1B18F0315B00EBC6C2 /* util.h */,
 				7D1247C51927D18F00A6E8BC /* util.c */,
+				7D760E54192E48D4003B74FE /* MKPolyline+Attribs.h */,
+				7D760E55192E48D4003B74FE /* MKPolyline+Attribs.m */,
 				7D760E4E19286035003B74FE /* MKPolygon+Attribs.h */,
 				7D760E4F19286035003B74FE /* MKPolygon+Attribs.m */,
 				7D760E3E19282C54003B74FE /* ElevationDirectionTriangle.h */,
@@ -409,6 +414,7 @@
 				7D760E4C19282DBD003B74FE /* CSMapAnnotation.m in Sources */,
 				7D760E4A19282DBD003B74FE /* CSImageAnnotationView.m in Sources */,
 				7D1247C61927D18F00A6E8BC /* util.c in Sources */,
+				7D760E56192E48D4003B74FE /* MKPolyline+Attribs.m in Sources */,
 				7D780ABB1902A8F7001EDA7E /* AFHTTPRequestOperationManager.m in Sources */,
 				7D99FDF418F0309600EBC6C2 /* elevationAppDelegate.m in Sources */,
 				7D760E5019286035003B74FE /* MKPolygon+Attribs.m in Sources */,
@@ -573,7 +579,7 @@
 				);
 				INFOPLIST_FILE = "MapsElevation/MapsElevation-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "C7AACC8D-0BA4-4620-A724-B027DE370F37";
+				PROVISIONING_PROFILE = "369EF5FE-3B72-4EDB-A0AB-E3EAFCECE0AC";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -593,7 +599,7 @@
 				);
 				INFOPLIST_FILE = "MapsElevation/MapsElevation-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "C7AACC8D-0BA4-4620-A724-B027DE370F37";
+				PROVISIONING_PROFILE = "369EF5FE-3B72-4EDB-A0AB-E3EAFCECE0AC";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
