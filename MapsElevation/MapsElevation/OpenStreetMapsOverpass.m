@@ -103,7 +103,7 @@
 - (void) parserDidEndDocument:(NSXMLParser *)parser
 {
     if (_currentWay) [_ways addObject:_currentWay]; // add the last way
-    TGLog(@"%lu ways", [_ways count]);
+    TGLog(@"%lu ways", (unsigned long)[_ways count]);
     
     if (WAY_QUERY_LIMIT && [_ways count]>WAY_QUERY_LIMIT)
     {
@@ -123,6 +123,9 @@
     }
     [_requests removeAllObjects];
 
+#if 1
+    [self AdjustWaysBySlopeChange:_ways];
+#else
     _ways=[self AdjustWays:_ways];
     
     // spawn off some elevation requests
@@ -140,6 +143,8 @@
             TGLog(@"not waypoints for way %lu (%lu points)", [_ways indexOfObject:w], [waypoints count]);
             continue;
         }
+        
+        // TODO: we should group short ways together to decrease the number of elevation requests.
         
         evr=[[ElevationRequest alloc] initWithQueryArray:waypoints usingBlock:^(NSMutableArray* points)
         {
@@ -161,7 +166,7 @@
 
 
     }
-    
+#endif
 }
 
 
@@ -240,7 +245,7 @@
         {
             TGLog(@"way %d is too long %f - break it up. %d points", wcnt, dist, (int)[points count]);
             
-            // go through the points and add in points every 50m for sections that are too long.
+            // go through the points and add in points every WAY_DISTANCE for sections that are too long.
             NSMutableArray* n_points=[NSMutableArray array];
             [n_points addObject:[points objectAtIndex:0]];
             for (int wp=0; wp<[points count]-1; wp++)
@@ -253,7 +258,7 @@
                 {
                     TGLog(@"section %d needs to be broken up (%fm)", wp, dist);
                     TGLog(@"\t start pt %f,%f", p1.coordinate.latitude, p1.coordinate.longitude);
-                    // the two points are too far away - need to break it up into 50m sections
+                    // the two points are too far away - need to break it up into WAY_DISTANCE sections
                     int sections=dist/WAY_DISTANCE+1;
                     float bearing=getBearing(p1.coordinate.latitude, p1.coordinate.longitude, p2.coordinate.latitude, p2.coordinate.longitude);
                     TGLog(@"\tbreaking way section %d into %d %5.0fm parts (bearing %f)", wp, sections, WAY_DISTANCE, bearing);
@@ -333,6 +338,227 @@
     TGLog(@"the number of ways has changed from %d -> %d",(int)[ways count], (int)[n_ways count]);
     
     return n_ways;
+}
+
+
+
+-(UIColor*) getWayColor:(float) slope
+{
+    UIColor* color=[UIColor clearColor];
+    
+    if (slope>SLOPE_RED)            color=[UIColor redColor];
+    else if (slope>SLOPE_ORANGE)    color=[UIColor orangeColor];
+    else if (slope>SLOPE_YELLOW)    color=[UIColor yellowColor];
+    else if (slope>SLOPE_GREEN)     color=[UIColor greenColor];
+    else if (slope>SLOPE_BLUE)      color=[UIColor blueColor];
+    
+    return color;
+}
+
+-(void) dumpPoints:(NSArray*) points
+{
+    elevationAppDelegate* appdel = (elevationAppDelegate*)[[UIApplication sharedApplication] delegate];
+    elevationViewController* vc=(elevationViewController*)appdel.window.rootViewController;
+    for (ElevationPoint* p in points)
+    {
+        TGLog(@"%f,%f idx:%lu e:%f", p.coordinate.latitude, p.coordinate.longitude, p.idx, p.elevation);
+        [vc addPin:p.coordinate withTitle:[NSString stringWithFormat:@"%lu e:%2.0f", p.idx, p.elevation] withSubtitle:nil];
+    }
+}
+
+// go through the ways and break them up when the slope changes.
+-(void) AdjustWaysBySlopeChange:(NSMutableArray*) ways
+{
+    elevationAppDelegate* appdel = (elevationAppDelegate*)[[UIApplication sharedApplication] delegate];
+    elevationViewController* vc=(elevationViewController*)appdel.window.rootViewController;
+    
+    TGLog(@"%d ways", (int)[ways count]);
+    int wcnt=0;
+    for (NSMutableDictionary* w in ways)
+    {
+        wcnt++;
+        NSMutableArray* points=[w objectForKey:@"points"];
+        ElevationPoint* p1;
+        ElevationPoint* p2;
+        ElevationPoint* p3;
+        
+        p1=[points objectAtIndex:0];
+        
+        TGLog(@"WAY %d with %d points", wcnt, (int)[points count]);
+        
+        // for longer ways - we need to insert points for the frequency we want to evalutate the slope change
+        // ie - how short of a distance we care to figure out if the slope has changed or not.
+        
+        // go through the points and add in points every 50m for sections that are too long.
+        NSMutableArray* n_points=[NSMutableArray array];
+        [n_points addObject:p1];
+        for (int wp=0; wp<[points count]-1; wp++)
+        {
+            p1=[points objectAtIndex:wp];
+            p2=[points objectAtIndex:wp+1];
+            
+            float dist=getDist(p1.coordinate.latitude, p1.coordinate.longitude, p2.coordinate.latitude, p2.coordinate.longitude);
+            if (dist>SLOPE_CHANGE_EVAL_DIST)
+            {
+                TGLog(@"section %d needs to be broken up (%fm)", wp, dist);
+                TGLog(@"\t start pt %f,%f idx %lu", p1.coordinate.latitude, p1.coordinate.longitude, p1.idx);
+                // the two points are too far away - need to break it up into WAY_DISTANCE sections
+                int sections=dist/SLOPE_CHANGE_EVAL_DIST;
+                float bearing=getBearing(p1.coordinate.latitude, p1.coordinate.longitude, p2.coordinate.latitude, p2.coordinate.longitude);
+                TGLog(@"\tbreaking way section %d into %d %5.0fm parts (bearing %f)", wp, sections, SLOPE_CHANGE_EVAL_DIST, bearing);
+                for (int s=0; s<sections; s++)
+                {
+                    // reuse p1
+                    if (s>0) p1=p3;
+                    p3=[[ElevationPoint alloc] init];
+                    p3.coordinate=[self getDestination:p1.coordinate withDistance:SLOPE_CHANGE_EVAL_DIST andBearing:bearing];
+                    p3.idx=[n_points count]; // required to maintain order in elev req
+                    TGLog(@"\t new pt idx %lu %f,%f", p3.idx, p3.coordinate.latitude, p3.coordinate.longitude);
+                    [n_points addObject:p3];
+                    //[vc addPin:p3.coordinate withTitle:[NSString stringWithFormat:@"W %d, %lu", wcnt, [n_points count]] withSubtitle:nil];
+                }
+                // sections were up to before the last point - so we have to add it.
+                p2.idx=[n_points count]; // required to maintain order in elev req
+                [n_points addObject:p2];
+                //[vc addPin:p2.coordinate withTitle:[NSString stringWithFormat:@"W %d, %lu", wcnt, [n_points count]] withSubtitle:nil];
+            } else {
+                //TGLog(@"section %d is short enough %f", wp, dist);
+                p2.idx=[n_points count]; // required to maintain order in elev req
+                [n_points addObject:p2];
+                //[vc addPin:p2.coordinate withTitle:[NSString stringWithFormat:@"W %d, %lu", wcnt, [n_points count]] withSubtitle:nil];
+            }
+        }
+        
+        if ([n_points count]!=[points count])
+        {
+            TGLog(@"WAY %d points %lu->%lu", wcnt, [points count], [n_points count]);
+        }
+        [w removeObjectForKey:@"points"];
+        [w setObject:n_points forKey:@"points"];
+        
+        //[self dumpPoints:n_points];
+    } // end of inserting points into ways
+
+    TGLog(@"=========================");
+    TGLog(@"====STARTING ELEV REQ====");
+    TGLog(@"=========================");
+    
+    __block int e_wcnt=0;
+    __block NSMutableArray* n_ways=[NSMutableArray array];
+    for (__block NSMutableDictionary* ew in ways)
+    {
+        // get elevation data
+        NSMutableArray* epoints=[ew objectForKey:@"points"];
+        TGLog(@"getting elevation for way %lu (%lu points)", [_ways indexOfObject:ew]+1, [epoints count]);
+        ElevationRequest* evr=[[ElevationRequest alloc] initWithQueryArray:epoints usingBlock:^(NSMutableArray* points)
+         {
+            int n_way_cnt=0;
+             ElevationPoint* bp1;
+             ElevationPoint* bp2;
+             
+             e_wcnt++;
+             // update our waypoints
+             TGLog(@"rx elev for way %d (%lu points)", e_wcnt, [points count]);
+             
+
+             // double check that it's the right way
+             if ([points count]!=[[ew objectForKey:@"points"] count])
+             {
+                 TGLog(@"ERR %lu<>%lu", [points count], [[ew objectForKey:@"points"] count]);
+                 return;
+             }
+             
+             [ew setValue:points forKeyPath:@"points"];
+             
+             
+             // go through points and build new ways where the slope changes levels
+             // there will be some with multiple points
+             //    - these were from the original way and are for things like tight curves
+             // then there will be some with just 2 points
+             //    - these are from the above loops where we create sections
+             int last_wp2=0;
+             UIColor* prev_color=[UIColor clearColor];
+             for (int wp1=0; wp1<[points count]; wp1++)
+             {
+                 if (last_wp2) wp1=last_wp2; // restart wp1 loop at wp2
+                 last_wp2=0;
+                 
+                 NSMutableArray* wp_points=[NSMutableArray array];
+                 bp1=[points objectAtIndex:wp1];
+                 [wp_points addObject:bp1];
+                 //TGLog(@"\tbuilding new way start %d", wp1);
+                 for (int wp2=wp1+1; wp2<[points count]; wp2++)
+                 {
+                     bp2=[points objectAtIndex:wp2];
+                     [wp_points addObject:bp2];
+                     
+                     // have we reached the end of the way?
+                     // OR
+                     // has the slope changed levels (must be at least a certain length)
+                     float dist=getDist(bp1.coordinate.latitude, bp1.coordinate.longitude, bp2.coordinate.latitude, bp2.coordinate.longitude);
+                     float slope=100*fabs(bp1.elevation-bp2.elevation)/dist;
+                     
+                     //TGLog(@"%lu-%lu %f %f %f %f", bp1.idx, bp2.idx, bp1.elevation, bp2.elevation, dist, slope);
+                     
+                     UIColor* color=[self getWayColor:slope];
+                     if ( (color.CGColor != prev_color.CGColor &&
+                           dist > MIN_WAY_DIST_TO_DISPLAY)
+                         || wp2>=[points count]-1)
+                     {
+                         // build way
+                         TGLog(@"\tnew way[%lu->%lu] %d:pts d:%2.0f s:%2.0f", bp1.idx, bp2.idx, (int)[wp_points count], dist, slope);
+                         
+#if 0
+                         NSArray *rr = [wp_points sortedArrayUsingComparator:^NSComparisonResult(ElevationPoint* p1, ElevationPoint* p2) {
+                             if (p1.idx>p2.idx) return NSOrderedAscending;
+                             else if (p1.idx<p2.idx) return NSOrderedDescending;
+                             return NSOrderedSame;
+                         }];
+#endif
+                         //[self dumpPoints:wp_points];
+
+                         
+                         NSMutableDictionary* way=[NSMutableDictionary dictionaryWithDictionary:ew];
+                         [way removeObjectForKey:@"points"];
+                         [way setObject:wp_points forKey:@"points"];
+                         [way setObject:[NSNumber numberWithFloat:slope] forKey:@"slope"];
+                         [way setObject:color forKey:@"color"];
+                         
+                         prev_color=color;
+                         [n_ways addObject:way];
+                         n_way_cnt++;
+                         last_wp2=wp2;
+
+                         wp2=(int)[points count]; // exit wp2 loop
+                     }
+                 }
+             }
+             if (n_way_cnt>1) TGLog(@"WAY %d/%d was broken up into %d ways", e_wcnt, (int)[_ways count], n_way_cnt);
+             else {
+                 TGLog(@"WAY %d/%d - didnt get broken up", e_wcnt, (int)[_ways count]);
+                 [n_ways addObject:ew]; // add it back
+             }
+             
+             
+             
+             
+             
+             
+             // did we get the last request?
+             if (e_wcnt>=[_ways count])
+             {
+                 //TGLog(@"got last request");
+                 TGLog(@"the number of ways has changed from %d -> %d",(int)[ways count], (int)[n_ways count]);
+                 delegateBlock(n_ways);
+             }
+             
+             
+         }];
+        [_requests addObject:evr];
+        
+        
+    }
+    
 }
 
 @end

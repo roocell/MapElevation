@@ -22,8 +22,6 @@
 @property (retain, nonatomic) ElevationRoads* roads;
 
 
-@property (retain, nonatomic) NSMutableArray* routeLines; // NSDictionary of MKPolyline and MKPolylineView
-
 -(IBAction)locationButtonPressed:(id)sender;
 -(IBAction)roadsButtonPressed:(id)sender;
 -(IBAction)findSpotsButtonPressed:(id)sender;

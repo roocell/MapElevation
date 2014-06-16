@@ -30,14 +30,18 @@ float getDist(float lat1, float long1, float lat2, float long2);
 float getBearing(float startLat,float startLong,float endLat,float endLong);
 
 // APP OPTIONS
-#define MAP_ZOOM_LIMIT      3500    // meters
-#define WAY_QUERY_LIMIT     500     // number of ways returned - dont want to perform calculations (too much processing)
-#define WAY_DISTANCE        250.0   // meters
+#define MAP_ZOOM_LIMIT              3500    // meters
+#define WAY_QUERY_LIMIT             500     // number of ways returned - dont want to perform calculations (too much processing)
+#define WAY_DISTANCE                250.0   // meters
+#define SLOPE_CHANGE_EVAL_DIST      10.0    // meters
+#define MIN_WAY_DIST_TO_DISPLAY     50.0
 
-#define SLOPE_RED           10.0
-#define SLOPE_ORANGE        7.0
-#define SLOPE_YELLOW        4.0
-#define SLOPE_GREEN         1.0
-#define SLOPE_BLUE          0.5
-#define MIN_SLOPE_DISPLAYED SLOPE_BLUE     // will not display roads with slope lower than this
+#define SLOPE_BLACK                 25.0
+#define SLOPE_PURPLE                20.0
+#define SLOPE_RED                   15.0
+#define SLOPE_ORANGE                10.0
+#define SLOPE_YELLOW                7.0
+#define SLOPE_GREEN                 4.0
+#define SLOPE_BLUE                  1.0
+#define MIN_SLOPE_DISPLAYED         SLOPE_BLUE     // will not display roads with slope lower than this
 

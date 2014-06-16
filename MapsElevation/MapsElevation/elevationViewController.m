@@ -12,6 +12,7 @@
 #import "CSViewAnnotationView.h"
 #import "ElevationDirectionTriangle.h"
 #import "MKPolygon+Attribs.h"
+#import "MKPolyline+Attribs.h"
 
 @interface elevationViewController ()
 
@@ -25,13 +26,11 @@
 @synthesize grid=_grid;
 @synthesize loader=_loader;
 @synthesize roads=_roads;
-@synthesize routeLines=_routeLines;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    _routeLines=[NSMutableArray array];
     [self setMapOttawa:_mapView];
 }
 
@@ -174,6 +173,8 @@
     float bearing=getBearing(p1.coordinate.latitude, p1.coordinate.longitude, p2.coordinate.latitude, p2.coordinate.longitude);
     if (drop<0) bearing=fmodf(bearing+180.0, 360.0); // make it face the other way
 
+    //TGLog(@"%lu->%lu %f %f %2.0f b:%3.0f", p1.idx, p2.idx, p1.elevation, p2.elevation, drop, bearing);
+
     // build triangle around midpoint
 
 #if 0
@@ -208,7 +209,7 @@
     
 }
                                                  
--(void) WayDistance:(NSMutableDictionary*) way
+-(float) WayDistance:(NSMutableDictionary*) way
 {
     NSArray* points=[way objectForKey:@"points"];
     float dist=0;
@@ -219,6 +220,7 @@
         dist+=getDist(p1.coordinate.latitude, p1.coordinate.longitude, p2.coordinate.latitude, p2.coordinate.longitude);
     }
     [way setValue:[NSNumber numberWithFloat:dist] forKey:@"distance"];
+    return dist;
 }
                                           
 
@@ -240,11 +242,15 @@
     
     if (MAP_ZOOM_LIMIT && dist>MAP_ZOOM_LIMIT)
     {
+#if 0
         UIAlertView* alert=[[UIAlertView alloc] initWithTitle:@"Zoom in" message:[NSString stringWithFormat:@"Too large of an area (%fm). Please zoom in.", dist]
 													 delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil];
 		[alert show];
         [_loader stopAnimating];
         return;
+#endif
+        // auto zoom in
+        
     }
 
     
@@ -261,11 +267,13 @@
          {
              NSArray* points=[w objectForKey:@"points"];
 
-             [self WayDistance:w];
+             
+             float dist=[self WayDistance:w];
              
              // calculate the drop of the way
-             UIColor* color=[self getWayColor:w];
-             if (color.CGColor!=[UIColor clearColor].CGColor)
+             UIColor* color=[w objectForKey:@"color"];
+             if (!color) color=[self getWayColor:w];
+             if (color.CGColor!=[UIColor clearColor].CGColor && dist>=MIN_WAY_DIST_TO_DISPLAY)
              {
                  [self addRoute:points withColor:color];
                  [self AddArrowForWay:w withColor:color];
@@ -296,6 +304,36 @@
 
 
 #pragma mark MAPVIEW
+#if 0
+-(void) setMapZoomForElevation
+{
+    MKCoordinateRegion region=MKCoordinateRegionMakeWithDistance(_mapView.centerCoordinate,
+    MAP_ZOOM_LIMIT
+    float spanLat=sqrtf(<#float#>)
+    float spanLng;
+    [self setMapWithDimensions:_mapView.userLocation.coordinate.latitude lat:_mapView.userLocation.coordinate.longitude spanLat:spanLat spanLng:spanLng];
+}
+
+-(void) setMapWithDimensions:(MKMapView*) map lat:(dou  ble)_lat lng:(double)_lng spanLat:(double)_slat spanLng:(double)_slng
+{
+	MKCoordinateRegion region;
+	MKCoordinateSpan span;
+	span.latitudeDelta=_slat;
+	span.longitudeDelta=_slng;
+    
+	CLLocationDegrees latitude  = _lat;
+	CLLocationDegrees longitude = _lng;
+	CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(latitude, longitude);
+    
+	CLLocationCoordinate2D location=coordinate;
+	region.span=span;
+	region.center=location;
+	[map setRegion:region animated:TRUE];
+	[map regionThatFits:region];
+}
+#endif
+
+
 - (void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
 {
 
@@ -323,7 +361,7 @@
 #define OTTAWA_LAT 45.40761
 	[self setMapWithDimensions:map lat:OTTAWA_LAT lng:-75.700264 spanLat:0.20 spanLng:0.20];
 }
-
+                                                                 
 -(void) showUser
 {
     //MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(_mapView.userLocation.coordinate, RADIUS*2, RADIUS*2);
@@ -366,21 +404,24 @@
 		return nil; //default to blue dot
 	}
 
-    CSMapAnnotation* csAnnotation = (CSMapAnnotation*)annotation;
-    if(csAnnotation.annotationType == CSMapAnnotationTypeView)
+	if ([annotation respondsToSelector:@selector(annotationType)])
     {
-        NSString* identifier = csAnnotation.reuseIdentifier;
-        CSViewAnnotationView* vAnnotationView = [[CSViewAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:identifier];
-        annotationView = vAnnotationView;
-        //annotationView.centerOffset = CGPointMake(0, ANNO_OFFSET); // move it up slight so the point appears on the spot
-        //annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-        [annotationView setEnabled:NO];
-        [annotationView setCanShowCallout:NO];
+        CSMapAnnotation* csAnnotation = (CSMapAnnotation*)annotation;
+        if(csAnnotation.annotationType == CSMapAnnotationTypeView)
+        {
+            NSString* identifier = csAnnotation.reuseIdentifier;
+            CSViewAnnotationView* vAnnotationView = [[CSViewAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:identifier];
+            annotationView = vAnnotationView;
+            //annotationView.centerOffset = CGPointMake(0, ANNO_OFFSET); // move it up slight so the point appears on the spot
+            //annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+            [annotationView setEnabled:NO];
+            [annotationView setCanShowCallout:NO];
 
-        CGAffineTransform transform = CGAffineTransformMakeRotation(deg2rad(csAnnotation.bearing));
-        annotationView.transform = transform;
+            CGAffineTransform transform = CGAffineTransformMakeRotation(deg2rad(csAnnotation.bearing));
+            annotationView.transform = transform;
 
-        return annotationView;
+            return annotationView;
+        }
     }
     
     //create annotation
@@ -428,8 +469,6 @@
 
 - (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id <MKOverlay>)overlay
 {
-	MKOverlayView* overlayView = nil;
-
     if ([overlay isKindOfClass:MKPolygon.class]) {
         MKPolygon* polygon=(MKPolygon*)overlay;
         MKPolygonView *polygonView = [[MKPolygonView alloc] initWithOverlay:overlay];
@@ -438,27 +477,17 @@
         polygonView.fillColor = polygon.color;
         return polygonView;
     }
-    // TODO: is there a more efficient way to do this?  => yes - use a category like we did for MKPolygon
-    // like not cache the polyline view?
-	for (NSMutableDictionary* d in _routeLines)
+
+    if ([overlay isKindOfClass:MKPolyline.class])
     {
-        MKPolyline* routeLine=[d objectForKey:@"line"];
-        if(overlay == routeLine)
-        {
-            //if we have not yet created an overlay view for this overlay, create it now.
-            overlayView=[d objectForKey:@"view"];
-            if(overlayView==nil)
-            {
-                MKPolylineView* poly=[[MKPolylineView alloc] initWithPolyline:routeLine];
-                //poly.fillColor = [UIColor redColor];
-                poly.strokeColor = [d objectForKey:@"color"];
-                poly.lineWidth = 5;
-                [d setValue:poly forKey:@"view"];
-                overlayView=[d objectForKey:@"view"];
-            }
-        }
+        MKPolyline* polyline=(MKPolyline*)overlay;
+        MKPolylineView* polylineView=[[MKPolylineView alloc] initWithPolyline:polyline];
+        //poly.fillColor = [UIColor redColor];
+        polylineView.strokeColor = polyline.color;
+        polylineView.lineWidth = 5;
+        return polylineView;
     }
-	return overlayView;
+	return nil;
 }
 
 
@@ -485,11 +514,7 @@
 	
 	// create the polyline based on the array of points.
     MKPolyline* routeLine=[MKPolyline polylineWithPoints:pointArr count:[route count]];
-    NSMutableDictionary* d=[NSMutableDictionary dictionary];
-    [d setValue:routeLine forKey:@"line"];
-    [d setValue:color forKey:@"color"];
-    [_routeLines addObject:d];
-	    
+    routeLine.color=color;
 	// clear the memory allocated earlier for the points
 	free(pointArr);
 	

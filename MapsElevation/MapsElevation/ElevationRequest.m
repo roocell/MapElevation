@@ -59,23 +59,31 @@
 // can be any size (this function will break it up into multiple requests)
 -(void) QueryElevations:(NSMutableArray*) points
 {
+    // TODO: we could limit the number of query coordinates if adjacent ones are very close together. (we could exlude those ones)
+    //       but may not save too much, because we would have to eliminate enough to remove an entire request.
+    
     int i;
     _numberOfRequests=[points count]/MAPQUEST_API_MAX_POINTS_PER_REQUEST;
     if ([points count]%MAPQUEST_API_MAX_POINTS_PER_REQUEST!=0) _numberOfRequests++;
     _numberOfRequestsLeftToProcess=_numberOfRequests;
     
-    //TGLog(@"%lu requests required", _numberOfRequests);
+    //TGLog(@"%lu requests required for %lu points", _numberOfRequests, [_points count]);
     
     // build requests based on API limits.
     NSMutableArray* reqarr=[[NSMutableArray alloc] initWithCapacity:0];
+    int lastreqsize=[points count]%MAPQUEST_API_MAX_POINTS_PER_REQUEST;
+    if (lastreqsize==0) lastreqsize=MAPQUEST_API_MAX_POINTS_PER_REQUEST; // exactly multiple of MAPQUEST_API_MAX_POINTS_PER_REQUEST
     for (int r=0; r<_numberOfRequests; r++)
     {
+        [reqarr removeAllObjects];
         for (i=0; i<MAPQUEST_API_MAX_POINTS_PER_REQUEST; i++)
         {
-            if ([points count]%MAPQUEST_API_MAX_POINTS_PER_REQUEST && i>=[points count]%MAPQUEST_API_MAX_POINTS_PER_REQUEST) break;
+            if (r>=_numberOfRequests-1 && i>=lastreqsize) break;
+            
             ElevationPoint* p=[points objectAtIndex:i+r*MAPQUEST_API_MAX_POINTS_PER_REQUEST];
             [reqarr addObject:p];
         }
+        //TGLog(@"sending req with %lu pts", [reqarr count]);
         [self queryMapquestLocations:[self ArrayToString:reqarr withDelimiter:MAPQUEST_DELIMITER]];
     }
 }
@@ -149,7 +157,10 @@
 // mapquest only has one API - a collection of points.
 -(void) MapquestResponse:(NSDictionary*) dict
 {
-    //TGLog(@"processing %lu/%lu", _numberOfRequestsLeftToProcess, _numberOfRequests);
+    // add the data to the grid
+    NSArray *elevationProfile = [dict valueForKey:@"elevationProfile"];
+    NSArray *shapePoints = [dict valueForKey:@"shapePoints"];
+    //TGLog(@"processing %lu/%lu with %lu pts for %lu pts", _numberOfRequestsLeftToProcess, _numberOfRequests, [elevationProfile count], [_points count]);
     
     //TGLog(@"%@", dict);
     NSDictionary *info = [dict valueForKey:@"info"];
@@ -166,9 +177,6 @@
         TGLog(@"INFO - mapquest some data points missing");
     }
     
-    // add the data to the grid
-    NSArray *elevationProfile = [dict valueForKey:@"elevationProfile"];
-    NSArray *shapePoints = [dict valueForKey:@"shapePoints"];
     
     int idx;
     NSDictionary* eitem;
@@ -215,6 +223,11 @@
             else if (p1.idx<p2.idx) return NSOrderedDescending;
             return NSOrderedSame;
         }];
+
+        if ([rr count]!=[_points count])
+        {
+            TGLog(@"ERR missing elev %lu<>%lu", [rr count], [_points count]);
+        }
         delegateBlock([NSMutableArray arrayWithArray:rr]);
     }
     
@@ -238,7 +251,7 @@
                                                                  kCFStringEncodingUTF8 );
 #endif
     
-    TGLog(@"%@", escapedUrlString);
+    //TGLog(@"%@", escapedUrlString);
     
     _manager = [AFHTTPRequestOperationManager manager];
     
